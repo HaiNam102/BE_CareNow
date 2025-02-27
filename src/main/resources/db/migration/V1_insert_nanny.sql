@@ -1,0 +1,3 @@
+INSERT INTO nanny (name_of_nanny, email, phone_number, introduce_yourself, dob, gender, city, workable_area, experience_year, salary, account_id) VALUES
+('Le Thi C', 'nanny1@example.com', '0971122334', 'Gioi thieu ve ban than 1', '1990-05-15', 'Female', 'Da Nang', 'Hai Chau', 5, '10,000,000 VND', 3),
+('Hoang Van D', 'nanny2@example.com', '0965566778', 'Gioi thieu ve ban than 2', '1985-10-20', 'Male', 'Hai Phong', 'Ngo Quyen', 10, '15,000,000 VND', 4);
