@@ -7,19 +7,19 @@ import lombok.experimental.FieldDefaults;
 import java.util.Date;
 
 @Entity
-@Table(name = "nanny")
+@Table(name = "care_taker")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Nanny {
+public class CareTaker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long nanny_id;
+    Long care_taker_id;
 
-    @Column(name = "name_of_nanny")
-    String nameOfNanny;
+    @Column(name = "name_of_care_taker")
+    String nameOfCareTaker;
 
     @Column(name = "email")
     String email;
@@ -47,6 +47,12 @@ public class Nanny {
 
     @Column(name = "salary")
     int salary;
+
+    @Column(name = "avarage_rating")
+    float avarageRating;
+
+    @Column(name = "training_status")
+    int trainingStatus;
 
     @OneToOne
     @JoinColumn(name = "account_id")

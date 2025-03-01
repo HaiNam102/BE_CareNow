@@ -1,21 +1,20 @@
-create database if not exists nanny_now;
+create database if not exists care_now;
 
-use nanny_now;
+use care_now;
 
 create table customer(
-	user_id bigint auto_increment not null primary key,
-    name_of_user nvarchar(255),
+	customer_id bigint auto_increment not null primary key,
+    name_of_customer nvarchar(255),
     email varchar(255),
     phone_number varchar(11),
     city nvarchar(255),
     address nvarchar(255),
-    special_request nvarchar(1000),
     account_id bigint
 );
 
-create table nanny(
-	nanny_id bigint auto_increment not null primary key,
-    name_of_nanny nvarchar(255),
+create table care_taker(
+	care_taker_id bigint auto_increment not null primary key,
+    name_of_care_taker nvarchar(255),
     email varchar(255),
     phone_number varchar(11),
     introduce_yourself nvarchar(10000),
@@ -25,6 +24,8 @@ create table nanny(
     workable_area nvarchar(255),
     experience_year int,
     salary varchar(255),
+    avarage_rating float,
+    training_status boolean default false,
     account_id bigint
 );
 
@@ -55,11 +56,33 @@ create table account_role(
     account_id bigint
 );
 
+create table care_recipient(
+	care_recipient_id bigint auto_increment not null primary key,
+    name nvarchar (255),
+    gender varchar (10),
+    phone_number varchar(255),
+    year_old varchar(10),
+    special_detail nvarchar(1000)
+);
+
+create table image(
+	image_id bigint auto_increment not null primary key,
+    img_profile nvarchar(255),
+    img_certificate nvarchar(255),
+    img_cccd nvarchar(255)
+);
+
+create table care_taker_feedback(
+	feedback_id bigint auto_increment not null primary key,
+    feedback nvarchar(255),
+    rating int
+);
+
 ALTER TABLE customer
 ADD CONSTRAINT fk_customer_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
 
-ALTER TABLE nanny
-ADD CONSTRAINT fk_nanny_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
+ALTER TABLE care_taker
+ADD CONSTRAINT fk_care_taker_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
 
 ALTER TABLE admin
 ADD CONSTRAINT fk_admin_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;

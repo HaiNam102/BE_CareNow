@@ -14,10 +14,10 @@ import lombok.experimental.FieldDefaults;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long user_id;
+    Long customer_id;
 
-    @Column(name = "name_of_user")
-    String nameOfUser;
+    @Column(name = "name_of_customer")
+    String nameOfCustomer;
 
     @Column(name = "email")
     String email;
@@ -30,9 +30,6 @@ public class Customer {
 
     @Column(name = "address")
     String address;
-
-    @Column(name = "special_request")
-    String special_request;
 
     @OneToOne
     @JoinColumn(name = "account_id")

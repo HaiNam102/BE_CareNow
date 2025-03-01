@@ -32,7 +32,7 @@ public class Account {
     Admin admin;
 
     @OneToOne(mappedBy = "account")
-    Nanny nanny;
+    CareTaker careTaker;
 
     @OneToMany(mappedBy = "account")
     List<Account_Role> accountRoles;
