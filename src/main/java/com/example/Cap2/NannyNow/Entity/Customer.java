@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Table(name = "customer")
 @AllArgsConstructor
@@ -35,4 +37,12 @@ public class Customer {
     @JoinColumn(name = "account_id")
     Account account;
 
+    @OneToMany(mappedBy = "customer")
+    List<CareTakerFeedback> careTakerFeedbacks;
+
+    @OneToOne(mappedBy = "customer")
+    CareRecipient careRecipient;
+
+    @OneToMany(mappedBy = "customer")
+    List<Booking> bookings;
 }

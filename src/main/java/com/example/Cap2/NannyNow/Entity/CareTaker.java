@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "care_taker")
@@ -58,4 +59,19 @@ public class CareTaker {
     @JoinColumn(name = "account_id")
     Account account;
 
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    Image image;
+
+    @OneToMany(mappedBy = "care_taker")
+    List<Calendar> calendars;
+
+    @OneToMany(mappedBy = "care_taker")
+    List<OptionOfCareTaker> optionOfCareTakers;
+
+    @OneToMany(mappedBy = "care_taker")
+    List<CareTakerFeedback> careTakerFeedbacks;
+
+    @OneToMany(mappedBy = "care_taker")
+    List<Booking> bookings;
 }
