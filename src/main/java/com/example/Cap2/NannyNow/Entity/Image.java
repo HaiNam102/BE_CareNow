@@ -15,6 +15,7 @@ public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "image_id")
     Long image_id;
 
     @Column(name = "img_profile")
@@ -25,4 +26,8 @@ public class Image {
 
     @Column(name = "img_cccd")
     String imgCccd;
+
+    @OneToOne
+    @JoinColumn(name = "care_taker_id")
+    CareTaker care_taker;
 }

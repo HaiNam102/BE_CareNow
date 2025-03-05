@@ -29,5 +29,5 @@ public class CareTakerFeedback {
 
     @ManyToOne
     @JoinColumn(name = "care_taker_id")
-    CareTaker careTaker;
+    CareTaker care_taker;
 }

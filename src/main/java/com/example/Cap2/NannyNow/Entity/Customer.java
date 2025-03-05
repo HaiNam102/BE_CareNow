@@ -33,6 +33,9 @@ public class Customer {
     @Column(name = "address")
     String address;
 
+    @Column(name = "img_profile")
+    String imgProfile;
+
     @OneToOne
     @JoinColumn(name = "account_id")
     Account account;

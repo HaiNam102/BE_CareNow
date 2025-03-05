@@ -59,8 +59,7 @@ public class CareTaker {
     @JoinColumn(name = "account_id")
     Account account;
 
-    @OneToOne
-    @JoinColumn(name = "image_id")
+    @OneToOne(mappedBy = "care_taker")
     Image image;
 
     @OneToMany(mappedBy = "care_taker")

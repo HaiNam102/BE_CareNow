@@ -19,16 +19,16 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long calendarId;
 
-    @Column(name = "day", nullable = false)
+    @Column(name = "day")
     LocalDate day;
 
-    @Column(name = "time_to_start", nullable = false)
+    @Column(name = "time_to_start")
     LocalTime timeToStart;
 
-    @Column(name = "time_to_end", nullable = false)
+    @Column(name = "time_to_end")
     LocalTime timeToEnd;
 
     @ManyToOne
     @JoinColumn(name = "care_taker_id")
-    CareTaker careTaker;
+    CareTaker care_taker;
 }

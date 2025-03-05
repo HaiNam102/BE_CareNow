@@ -40,7 +40,7 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "care_taker_id")
-    CareTaker careTaker;
+    CareTaker care_taker;
 
     @OneToOne(mappedBy = "booking")
     Payment payment;

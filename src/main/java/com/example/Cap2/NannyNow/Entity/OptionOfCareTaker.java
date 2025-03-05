@@ -19,9 +19,9 @@ public class OptionOfCareTaker {
 
     @ManyToOne
     @JoinColumn(name = "option_id")
-    Options option;
+    Options options;
 
     @ManyToOne
     @JoinColumn(name = "care_taker_id")
-    CareTaker careTaker;
+    CareTaker care_taker;
 }
