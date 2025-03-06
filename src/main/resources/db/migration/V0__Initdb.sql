@@ -9,6 +9,7 @@ create table customer(
     phone_number varchar(11),
     city nvarchar(255),
     address nvarchar(255),
+    img_profile nvarchar(255),
     account_id bigint
 );
 
@@ -26,8 +27,7 @@ create table care_taker(
     salary varchar(255),
     avarage_rating float,
     training_status boolean default false,
-    account_id bigint,
-    image_id bigint
+    account_id bigint
 );
 
 create table admin(
@@ -71,7 +71,8 @@ create table image(
 	image_id bigint auto_increment not null primary key,
     img_profile nvarchar(255),
     img_certificate nvarchar(255),
-    img_cccd nvarchar(255)
+    img_cccd nvarchar(255),
+    care_taker_id bigint
 );
 
 create table care_taker_feedback(
@@ -127,8 +128,7 @@ ALTER TABLE customer
 ADD CONSTRAINT fk_customer_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
 
 ALTER TABLE care_taker
-ADD CONSTRAINT fk_care_taker_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_care_taker_image FOREIGN KEY (image_id) REFERENCES image(image_id) ON DELETE CASCADE;
+ADD CONSTRAINT fk_care_taker_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
 
 ALTER TABLE admin
 ADD CONSTRAINT fk_admin_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
@@ -157,3 +157,6 @@ ADD CONSTRAINT fk_booking_care_taker FOREIGN KEY (care_taker_id) REFERENCES care
 
 ALTER TABLE payment
 ADD CONSTRAINT fk_payment_booking FOREIGN KEY (booking_id) REFERENCES booking(booking_id) ON DELETE CASCADE;
+
+ALTER TABLE image
+ADD CONSTRAINT fk_image_care_taker FOREIGN KEY (care_taker_id) REFERENCES care_taker(care_taker_id) ON DELETE CASCADE;
