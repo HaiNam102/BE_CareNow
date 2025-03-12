@@ -42,13 +42,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Cấu hình bảo mật cho HTTP
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auths/login").permitAll()
-
+                        .requestMatchers("/api/auths/register").permitAll()
+                        .requestMatchers("/api/auths/**").permitAll()
+                        .requestMatchers("/api/careTaker/**").permitAll()
+                        .requestMatchers("/api/careTakerFeedBack/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions ->
@@ -59,21 +60,19 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Thêm JWT filter
 
-        return http.build(); // Xây dựng SecurityFilterChain
+        return http.build();
     }
-
-    // Cấu hình CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // Cho phép domain FE
-        configuration.addAllowedMethod("*"); // Cho phép tất cả các HTTP method
-        configuration.addAllowedHeader("*"); // Cho phép tất cả các header
-        configuration.setAllowCredentials(true); // Cho phép gửi cookie hoặc thông tin xác thực
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
         configuration.addAllowedHeader("Authorization");
         configuration.addAllowedHeader("Content-Type");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Áp dụng cho tất cả các endpoint
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 

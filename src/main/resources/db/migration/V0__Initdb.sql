@@ -9,7 +9,7 @@ create table customer(
     phone_number varchar(11),
     city nvarchar(255),
     address nvarchar(255),
-    img_profile nvarchar(255),
+--    img_profile nvarchar(255),
     account_id bigint
 );
 
@@ -79,6 +79,8 @@ create table care_taker_feedback(
 	feedback_id bigint auto_increment not null primary key,
     feedback nvarchar(255),
     rating int,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	customer_id bigint,
     care_taker_id bigint
 );

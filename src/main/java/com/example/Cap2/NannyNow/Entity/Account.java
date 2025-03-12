@@ -17,16 +17,16 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id")
-    private Long accountId;
+    Long accountId;
 
     @Column(name = "user_name")
-    private String userName;
+    String userName;
 
     @Column(name = "password")
-    private String password;
+    String password;
 
     @OneToOne(mappedBy = "account")
-    private Customer customer;
+    Customer customer;
 
     @OneToOne(mappedBy = "account")
     Admin admin;
