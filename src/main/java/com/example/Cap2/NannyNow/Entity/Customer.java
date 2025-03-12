@@ -1,5 +1,7 @@
 package com.example.Cap2.NannyNow.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -33,19 +35,23 @@ public class Customer {
     @Column(name = "address")
     String address;
 
-    @Column(name = "img_profile")
-    String imgProfile;
+//    @Column(name = "img_profile")
+//    String imgProfile;
 
     @OneToOne
     @JoinColumn(name = "account_id")
+    @JsonIgnore
     Account account;
 
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     List<CareTakerFeedback> careTakerFeedbacks;
 
     @OneToOne(mappedBy = "customer")
+    @JsonIgnoreProperties("customer")
     CareRecipient careRecipient;
 
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     List<Booking> bookings;
 }

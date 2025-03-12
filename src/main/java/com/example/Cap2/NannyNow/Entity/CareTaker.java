@@ -1,5 +1,7 @@
 package com.example.Cap2.NannyNow.Entity;
 
+import com.example.Cap2.NannyNow.Enum.EGender;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -35,7 +37,8 @@ public class CareTaker {
     Date dob;
 
     @Column(name = "gender")
-    String gender;
+    @Enumerated(EnumType.STRING)
+    EGender gender;
 
     @Column(name = "city")
     String city;
@@ -53,24 +56,30 @@ public class CareTaker {
     float avarageRating;
 
     @Column(name = "training_status")
-    int trainingStatus;
+    boolean trainingStatus;
 
     @OneToOne
     @JoinColumn(name = "account_id")
+    @JsonIgnore
     Account account;
 
     @OneToOne(mappedBy = "care_taker")
+    @JsonIgnore
     Image image;
 
     @OneToMany(mappedBy = "care_taker")
+    @JsonIgnore
     List<Calendar> calendars;
 
     @OneToMany(mappedBy = "care_taker")
+    @JsonIgnore
     List<OptionOfCareTaker> optionOfCareTakers;
 
     @OneToMany(mappedBy = "care_taker")
+    @JsonIgnore
     List<CareTakerFeedback> careTakerFeedbacks;
 
     @OneToMany(mappedBy = "care_taker")
+    @JsonIgnore
     List<Booking> bookings;
 }

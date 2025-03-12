@@ -1,0 +1,17 @@
+package com.example.Cap2.NannyNow.Mapper;
+
+import com.example.Cap2.NannyNow.DTO.Request.Author.RegisterDTO;
+import com.example.Cap2.NannyNow.DTO.Response.CareTaker.CareTakerRes;
+import com.example.Cap2.NannyNow.Entity.CareTaker;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
+@Mapper(componentModel = "spring")
+public interface CareTakerMapper {
+    CareTakerMapper INSTANCE = Mappers.getMapper(CareTakerMapper.class);
+    @Mapping(source = "nameOfUser" , target = "nameOfCareTaker")
+    CareTaker toCareTaker(RegisterDTO registerDTO);
+
+    CareTakerRes toCareTakerRes(CareTaker careTaker);
+}
