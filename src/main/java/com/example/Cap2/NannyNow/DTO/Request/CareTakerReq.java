@@ -21,7 +21,4 @@ public class CareTakerReq {
     String workableArea;
     int experienceYear;
     int salary;
-    float avarageRating;
-    int trainingStatus;
-
 }

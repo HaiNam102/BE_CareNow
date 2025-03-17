@@ -14,5 +14,4 @@ public class CustomerReq {
     String phoneNumber;
     String city;
     String address;
-    String imgProfile;
 }

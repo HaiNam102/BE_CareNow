@@ -29,4 +29,17 @@ public class CareTakerFeedBackController {
                 .build()
         );
     }
+
+    @GetMapping
+    public ResponseEntity<?> getFeedBackByRatingAndCareTaker(
+            @RequestParam("rating") int rating,
+            @RequestParam("careTaker_id") Long careTaker_id
+    ){
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(careTakerFeedBackService.getFeedBackByRatingAndCareTaker(rating,careTaker_id))
+                .build()
+        );
+    }
 }

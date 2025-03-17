@@ -1,2 +1,3 @@
-INSERT INTO care_taker (name_of_care_taker, email, phone_number, introduce_yourself, dob, gender, city, workable_area, experience_year, salary, avarage_rating, training_status, account_id) VALUES
-('Tran Thi B', 'caretaker1@example.com', '0978111222', 'Experienced nanny', '1990-01-01', 'FEMALE', 'Hanoi', 'Ba Dinh', 5, '8000000', 4.5, true, 3);
+INSERT INTO care_taker (name_of_care_taker, email, phone_number, introduce_yourself, dob, gender, city, workable_area, experience_year, service_price, training_status, account_id) VALUES
+('Tran Thi Binh', 'caretaker1@example.com', '0978111222', 'Experienced nanny', '1990-01-01', 'FEMALE', 'Hanoi', 'Ba Dinh', 5, '8000000', true, 5),
+('Nguyen Thi Lan', 'caretaker2@example.com', '0978111223', 'Experienced nanny of care', '1987-10-01', 'FEMALE', 'DaNang', 'Hoa Vang', 6, '9000000', true, 6);

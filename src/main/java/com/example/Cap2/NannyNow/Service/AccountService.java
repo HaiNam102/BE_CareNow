@@ -4,7 +4,6 @@ import com.example.Cap2.NannyNow.DTO.Request.Author.RegisterDTO;
 import com.example.Cap2.NannyNow.Entity.*;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
-import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Mapper.AccountMapper;
 import com.example.Cap2.NannyNow.Mapper.CareTakerMapper;
 import com.example.Cap2.NannyNow.Mapper.CustomerMapper;
@@ -12,13 +11,14 @@ import com.example.Cap2.NannyNow.Repository.*;
 import com.example.Cap2.NannyNow.Service.Cloud.CloudinaryService;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +33,8 @@ public class AccountService {
     CareTakerMapper careTakerMapper;
     AccountMapper accountMapper;
     ImageRepository imageRepository;
+    OptionDetailsOfCareTakerRepository optionDetailsOfCareTakerRepository;
+    OptionsDetailsRepository optionsDetailsRepository;
     CloudinaryService cloudinaryService;
 
 
@@ -62,15 +64,26 @@ public class AccountService {
 
         if(role.getRoleName().equalsIgnoreCase("CUSTOMER")){
             Customer customer = customerMapper.toCustomer(registerDTO);
-            System.out.println(customer);
             customer.setAccount(account);
             customerRepository.save(customer);
         }
         if(role.getRoleName().equalsIgnoreCase("CARE_TAKER")){
             CareTaker careTaker = careTakerMapper.toCareTaker(registerDTO);
-            System.out.println(careTaker);
             careTaker.setAccount(account);
             careTakerRepository.save(careTaker);
+
+            List<Long> selectedOptionDetailIds = registerDTO.getSelectedOptionDetailIds();
+            List<OptionDetailsOfCareTaker> optionDetailsOfCareTakers = new ArrayList<>();
+
+            for(Long optionDetailId : selectedOptionDetailIds){
+                OptionsDetails optionsDetails = optionsDetailsRepository.findById(optionDetailId).orElseThrow(()->new ApiException(ErrorCode.OPTION_DETAIL_NOT_FOUND));
+                OptionDetailsOfCareTaker optionDetailsOfCareTaker = new OptionDetailsOfCareTaker();
+                optionDetailsOfCareTaker.setCare_taker(careTaker);
+                optionDetailsOfCareTaker.setOptionsDetails(optionsDetails);
+                optionDetailsOfCareTakers.add(optionDetailsOfCareTaker);
+            }
+            optionDetailsOfCareTakerRepository.saveAll(optionDetailsOfCareTakers);
+
             Image image = new Image();
             try {
                 String imgProfilUrl = (imgProfile != null) ? cloudinaryService.uploadFile(imgProfile) : null;

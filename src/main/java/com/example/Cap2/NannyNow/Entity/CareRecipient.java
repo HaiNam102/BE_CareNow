@@ -23,9 +23,6 @@ public class CareRecipient {
     @Column(name = "gender")
     String gender;
 
-    @Column(name = "phone_number")
-    String phoneNumber;
-
     @Column(name = "year_old")
     String yearOld;
 

@@ -35,15 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtUtil.extractUsername(token);
             String role = jwtUtil.extractRole(token);
 
-            // Tạo danh sách quyền (authorities) dựa trên role
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.toUpperCase());
 
-            // Tạo Authentication object với username và quyền
+
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     username, null, Collections.singletonList(authority)
             );
 
-            // Lưu vào SecurityContextHolder
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

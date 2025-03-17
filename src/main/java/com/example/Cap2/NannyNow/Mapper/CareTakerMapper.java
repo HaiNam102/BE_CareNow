@@ -1,7 +1,9 @@
 package com.example.Cap2.NannyNow.Mapper;
 
 import com.example.Cap2.NannyNow.DTO.Request.Author.RegisterDTO;
+import com.example.Cap2.NannyNow.DTO.Request.CareTakerReq;
 import com.example.Cap2.NannyNow.DTO.Response.CareTaker.CareTakerRes;
+import com.example.Cap2.NannyNow.DTO.Response.CareTaker.CareTakerSearchRes;
 import com.example.Cap2.NannyNow.Entity.CareTaker;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,4 +16,7 @@ public interface CareTakerMapper {
     CareTaker toCareTaker(RegisterDTO registerDTO);
 
     CareTakerRes toCareTakerRes(CareTaker careTaker);
+
+    CareTakerSearchRes toCareTakerSearchRes(CareTaker careTaker);
+    CareTaker CareTakerReqtoCareTaker(CareTakerReq careTakerReq);
 }

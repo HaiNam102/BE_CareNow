@@ -23,6 +23,5 @@ public class Options {
     String nameOption;
 
     @OneToMany(mappedBy = "options")
-    List<OptionOfCareTaker> optionOfCareTakers;
-
+    List<OptionsDetails> optionsDetails;
 }
