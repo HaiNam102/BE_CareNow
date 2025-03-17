@@ -49,11 +49,11 @@ public class CareTaker {
     @Column(name = "experience_year")
     int experienceYear;
 
-    @Column(name = "salary")
-    int salary;
+    @Column(name = "service_price")
+    String servicePrice;
 
-    @Column(name = "avarage_rating")
-    float avarageRating;
+//    @Column(name = "avarage_rating")
+//    float avarageRating;
 
     @Column(name = "training_status")
     boolean trainingStatus;
@@ -73,7 +73,7 @@ public class CareTaker {
 
     @OneToMany(mappedBy = "care_taker")
     @JsonIgnore
-    List<OptionOfCareTaker> optionOfCareTakers;
+    List<OptionDetailsOfCareTaker> optionOfCareTakers;
 
     @OneToMany(mappedBy = "care_taker")
     @JsonIgnore

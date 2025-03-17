@@ -13,9 +13,12 @@ public enum ErrorCode {
     INVALID_PASSWORD(40401, "invalid password", HttpStatus.NOT_FOUND),
     INVALID_ACCOUNT(40402, "invalid account", HttpStatus.NOT_FOUND),
     INVALID_ROLE(40403, "invalid role", HttpStatus.NOT_FOUND),
-    MAIL_PHONE_USERNAME_ALREADY_EXITS(40900, "userName, Mail or Phone already exits ", HttpStatus.CONFLICT),
-    IMAGE_UPLOAD_FAILED(40409,"Image upload fail",HttpStatus.CONFLICT),
     USER_NOT_FOUND(40400, "customer or care taker not found", HttpStatus.NOT_FOUND),
+    MAIL_PHONE_USERNAME_ALREADY_EXITS(40900, "userName, Mail or Phone already exits ", HttpStatus.CONFLICT),
+    IMAGE_UPLOAD_FAILED(40901,"Image upload fail",HttpStatus.CONFLICT),
+    BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
+            "Please select a time that is at least 1 hour after the care taker has been off.", HttpStatus.CONFLICT),
+    OPTION_DETAIL_NOT_FOUND(404055,"Option detail not found",HttpStatus.NOT_FOUND)
     ;
     Integer code;
     String message;

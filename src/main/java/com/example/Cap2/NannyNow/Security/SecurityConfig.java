@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auths/**").permitAll()
                         .requestMatchers("/api/careTaker/**").permitAll()
                         .requestMatchers("/api/careTakerFeedBack/**").permitAll()
+                        .requestMatchers("/api/booking/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions ->

@@ -1,6 +1,7 @@
 package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Response.CareTaker.CareTakerRes;
+import com.example.Cap2.NannyNow.DTO.Response.CareTaker.CareTakerSearchRes;
 import com.example.Cap2.NannyNow.Entity.CareTaker;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
@@ -10,7 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -35,5 +38,16 @@ public class CareTakerService {
                 .orElseThrow(()->new ApiException(ErrorCode.USER_NOT_FOUND));
         CareTakerRes careTakerRes = careTakerMapper.toCareTakerRes(careTaker);
         return careTakerRes;
+    }
+
+    public List<CareTakerSearchRes> getCareTakerByDayAndArea(String area, LocalDate dayStart, LocalDate dayEnd){
+        List<CareTaker> careTakers = careTakerRepository.getCareTakerByDayAndArea(area, dayStart, dayEnd);
+        List<CareTakerSearchRes> careTakerSearchRes = new ArrayList<>();
+        for(CareTaker careTaker : careTakers){
+            CareTakerSearchRes careTakerSearchRes1 = careTakerMapper.toCareTakerSearchRes(careTaker);
+            careTakerSearchRes1.setImgProfile(careTaker.getImage().getImgProfile());
+            careTakerSearchRes.add(careTakerSearchRes1);
+        }
+        return careTakerSearchRes;
     }
 }

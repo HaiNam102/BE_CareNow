@@ -1,5 +1,6 @@
 package com.example.Cap2.NannyNow.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,12 +24,15 @@ public class Booking {
     String bookingAddress;
 
     @Column(name = "day")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate day;
 
     @Column(name = "time_to_start")
+    @JsonFormat(pattern = "HH:mm:ss")
     LocalTime timeToStart;
 
     @Column(name = "time_to_end")
+    @JsonFormat(pattern = "HH:mm:ss")
     LocalTime timeToEnd;
 
     @Column(name = "service_progress")

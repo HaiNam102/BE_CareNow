@@ -24,8 +24,8 @@ create table care_taker(
     city nvarchar(255),
     workable_area nvarchar(255),
     experience_year int,
-    salary varchar(255),
-    avarage_rating float,
+    service_price varchar(255),
+--    avarage_rating float,
     training_status boolean default false,
     account_id bigint
 );
@@ -61,7 +61,6 @@ create table care_recipient(
 	care_recipient_id bigint auto_increment not null primary key,
     name nvarchar (255),
     gender varchar (10),
-    phone_number varchar(255),
     year_old varchar(10),
     special_detail nvarchar(1000),
     customer_id bigint
@@ -99,10 +98,16 @@ create table options(
     name_option nvarchar(255)
 );
 
-create table option_of_care_taker(
+create table option_details_of_care_taker(
 	id bigint auto_increment not null primary key,
-    option_id bigint,
+    option_details_id bigint,
     care_taker_id bigint
+);
+
+create table option_details(
+    option_details_id bigint auto_increment not null primary key,
+    detail_name nvarchar(255),
+    options_id bigint
 );
 
 create table booking(
@@ -125,6 +130,7 @@ create table payment(
     create_at datetime,
     update_at datetime
 );
+
 
 ALTER TABLE customer
 ADD CONSTRAINT fk_customer_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
@@ -149,10 +155,6 @@ ADD CONSTRAINT fk_care_taker_feedback_customer FOREIGN KEY (customer_id) REFEREN
 ALTER TABLE calendar
 ADD CONSTRAINT fk_calendar_care_taker FOREIGN KEY (care_taker_id) REFERENCES care_taker(care_taker_id) ON DELETE CASCADE;
 
-ALTER TABLE option_of_care_taker
-ADD CONSTRAINT fk_option_of_care_taker_options FOREIGN KEY (option_id) REFERENCES options(options_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_option_of_care_taker_care_taker FOREIGN KEY (care_taker_id) REFERENCES care_taker(care_taker_id) ON DELETE CASCADE;
-
 ALTER TABLE booking
 ADD CONSTRAINT fk_booking_customer FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
 ADD CONSTRAINT fk_booking_care_taker FOREIGN KEY (care_taker_id) REFERENCES care_taker(care_taker_id) ON DELETE CASCADE;
@@ -162,3 +164,12 @@ ADD CONSTRAINT fk_payment_booking FOREIGN KEY (booking_id) REFERENCES booking(bo
 
 ALTER TABLE image
 ADD CONSTRAINT fk_image_care_taker FOREIGN KEY (care_taker_id) REFERENCES care_taker(care_taker_id) ON DELETE CASCADE;
+
+ALTER TABLE option_details_of_care_taker
+ADD CONSTRAINT fk_option_details_of_care_taker_option_details FOREIGN KEY (option_details_id) REFERENCES option_details(option_details_id) ON DELETE CASCADE,
+ADD CONSTRAINT fk_option_details_of_care_taker_care_taker FOREIGN KEY (care_taker_id) REFERENCES care_taker(care_taker_id) ON DELETE CASCADE;
+
+ALTER TABLE option_details
+ADD CONSTRAINT fk_option_details_options FOREIGN KEY (options_id) REFERENCES options(options_id) ON DELETE CASCADE;
+
+
