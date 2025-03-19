@@ -1,70 +1,64 @@
 package com.example.Cap2.NannyNow.Controller;
 
-import com.example.Cap2.NannyNow.DTO.Request.CareTakerReq;
+import com.example.Cap2.NannyNow.DTO.Request.CustomerReq;
 import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
-import com.example.Cap2.NannyNow.Service.CareTakerService;
+import com.example.Cap2.NannyNow.Service.CustomerService;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/careTaker")
+@RequestMapping("/api/customer")
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
-public class CareTakerController {
-    CareTakerService careTakerService;
+public class CustomerController {
+    CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<?> getAllCareTaker(){
+    public ResponseEntity<?> getAllCustomers() {
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(careTakerService.getAllCareTaker())
+                .data(customerService.getAllCustomers())
                 .build()
         );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCareTakerById(@PathVariable Long id){
+    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(careTakerService.getCareTakerById(id))
+                .data(customerService.getCustomerById(id))
                 .build()
         );
     }
 
-    @GetMapping("/search")
-    public  ResponseEntity<?> getCareTakerByDayAndArea(@RequestParam("area") String area,
-                                                       @RequestParam("dayStart") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dayStart,
-                                                       @RequestParam("dayEnd") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dayEnd){
+    @PostMapping
+    public ResponseEntity<?> createCustomer(@RequestBody CustomerReq customerReq) {
         return ResponseEntity.ok(ApiResponse.builder()
-                .code(SuccessCode.GET_SUCCESSFUL.getCode())
-                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(careTakerService.getCareTakerByDayAndArea(area,dayStart,dayEnd))
+                .code(SuccessCode.ADD_SUCCESSFUL.getCode())
+                .message(SuccessCode.ADD_SUCCESSFUL.getMessage())
+                .data(customerService.createCustomer(customerReq))
                 .build()
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCareTaker(@PathVariable Long id, @RequestBody CareTakerReq careTakerReq) {
+    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody CustomerReq customerReq) {
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.UPDATE_SUCCESSFUL.getCode())
                 .message(SuccessCode.UPDATE_SUCCESSFUL.getMessage())
-                .data(careTakerService.updateCareTaker(id, careTakerReq))
+                .data(customerService.updateCustomer(id, customerReq))
                 .build()
         );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCareTaker(@PathVariable Long id) {
-        careTakerService.deleteCareTaker(id);
+    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.DELETE_SUCCESSFUL.getCode())
                 .message(SuccessCode.DELETE_SUCCESSFUL.getMessage())

@@ -1,7 +1,7 @@
 package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Request.CustomerReq;
-import com.example.Cap2.NannyNow.DTO.Response.CustomerRes;
+import com.example.Cap2.NannyNow.Entity.Booking;
 import com.example.Cap2.NannyNow.Entity.Customer;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
@@ -10,6 +10,7 @@ import com.example.Cap2.NannyNow.Repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,9 +50,12 @@ public class CustomerService {
         return customerMapper.toCustomerRes(savedCustomer);
     }
 
+    @Transactional
     public void deleteCustomer(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        customerRepository.delete(customer);
+        if (!customerRepository.existsById(id)) {
+            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+        }
+        customerRepository.deleteCustomerAndRelatedData(id);
     }
+
 }
