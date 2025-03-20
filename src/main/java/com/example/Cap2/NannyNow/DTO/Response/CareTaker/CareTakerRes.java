@@ -14,11 +14,8 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CareTakerRes {
     String nameOfCareTaker;
-    String email;
-    String phoneNumber;
-    Date dob;
-    EGender gender;
-    String city;
-    String workableArea;
     int experienceYear;
+    String servicePrice;
+    String introduceYourself;
+    String workableArea;
 }
