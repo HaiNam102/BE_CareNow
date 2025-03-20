@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auths/register").permitAll()
                         .requestMatchers("/api/auths/**").permitAll()
                         .requestMatchers("/api/careTaker/**").permitAll()
+                        .requestMatchers("/api/customer/**").permitAll()
                         .requestMatchers("/api/careTakerFeedBack/**").permitAll()
                         .requestMatchers("/api/booking/**").permitAll()
                         .anyRequest().authenticated()
