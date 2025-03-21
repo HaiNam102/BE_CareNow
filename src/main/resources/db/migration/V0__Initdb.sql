@@ -21,7 +21,7 @@ create table care_taker(
     introduce_yourself nvarchar(10000),
     dob date,
     gender varchar(255),
-    city nvarchar(255),
+    district nvarchar(255),
     workable_area nvarchar(255),
     experience_year int,
     service_price varchar(255),
@@ -112,7 +112,9 @@ create table option_details(
 
 create table booking(
 	booking_id bigint auto_increment not null primary key,
+	place_name nvarchar(255),
     booking_address nvarchar(255),
+    description_place nvarchar(255),
 	day date not null,
     time_to_start time not null,
     time_to_end time not null,

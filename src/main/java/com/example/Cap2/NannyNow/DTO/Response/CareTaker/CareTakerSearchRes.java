@@ -14,7 +14,7 @@ public class CareTakerSearchRes {
     String nameOfCareTaker;
     int experienceYear;
     String imgProfile;
-    String city;
+    String district;
     int rating;
     String servicePrice;
 }

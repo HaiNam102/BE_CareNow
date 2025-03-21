@@ -41,7 +41,7 @@ public class CareTaker {
     EGender gender;
 
     @Column(name = "city")
-    String city;
+    String district;
 
     @Column(name = "workable_area")
     String workableArea;
