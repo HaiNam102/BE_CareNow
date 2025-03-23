@@ -1,11 +1,13 @@
 package com.example.Cap2.NannyNow.Entity;
 
+import com.example.Cap2.NannyNow.Enum.ELocationType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "booking")
@@ -23,15 +25,15 @@ public class Booking {
     @Column(name = "place_name")
     String placeName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "location_type")
+    ELocationType locationType;
+
     @Column(name = "booking_address")
     String bookingAddress;
 
     @Column(name = "description_place")
     String descriptionPlace;
-
-    @Column(name = "day")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    LocalDate day;
 
     @Column(name = "time_to_start")
     @JsonFormat(pattern = "HH:mm:ss")
@@ -54,4 +56,7 @@ public class Booking {
 
     @OneToOne(mappedBy = "booking")
     Payment payment;
+    
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<BookingDay> bookingDays;
 }

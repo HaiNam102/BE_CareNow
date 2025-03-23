@@ -11,6 +11,15 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking,Long> {
-    @Query("SELECT b FROM Booking b WHERE b.care_taker.care_taker_id = :careTakerId AND b.day = :day ORDER BY b.timeToEnd DESC")
-    List<Booking> findBookingForDay(@Param("careTakerId") Long careTakerId,@Param("day") LocalDate day);
+    @Query("SELECT b FROM Booking b " +
+           "JOIN b.bookingDays bd " +
+           "WHERE b.care_taker.care_taker_id = :careTakerId AND bd.day = :day " +
+           "ORDER BY b.timeToEnd DESC")
+    List<Booking> findBookingForDay(@Param("careTakerId") Long careTakerId, @Param("day") LocalDate day);
+    
+    @Query("SELECT b FROM Booking b WHERE b.care_taker.care_taker_id = :careTakerId")
+    List<Booking> findBookingsByCareTakerId(@Param("careTakerId") Long careTakerId);
+    
+    @Query("SELECT COUNT(DISTINCT b.bookingId) FROM Booking b WHERE b.care_taker.care_taker_id = :careTakerId")
+    int countBookingsByCareTakerId(@Param("careTakerId") Long careTakerId);
 }

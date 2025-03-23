@@ -116,7 +116,6 @@ create table booking(
 	place_name nvarchar(255),
     booking_address nvarchar(255),
     description_place nvarchar(255),
-	day date not null,
     time_to_start time not null,
     time_to_end time not null,
     service_progress nvarchar(255),

@@ -19,5 +19,6 @@ public class CareTakerSearchRes {
     String district;
     float rating;
     int totalReviewers;
+    int totalBookings;
     String servicePrice;
 }

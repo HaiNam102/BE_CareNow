@@ -43,13 +43,13 @@ public class CareTakerController {
     }
 
     @GetMapping("/search")
-    public  ResponseEntity<?> getCareTakerByDayAndArea(@RequestParam("area") String area,
+    public  ResponseEntity<?> getCareTakerByDayAndArea(@RequestParam("district") String district,
                                                        @RequestParam("dayStart") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dayStart,
                                                        @RequestParam(value = "dayEnd",required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dayEnd){
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(careTakerService.getCareTakerByDayAndArea(area,dayStart,dayEnd))
+                .data(careTakerService.getCareTakerByDayAndArea(district,dayStart,dayEnd))
                 .build()
         );
     }

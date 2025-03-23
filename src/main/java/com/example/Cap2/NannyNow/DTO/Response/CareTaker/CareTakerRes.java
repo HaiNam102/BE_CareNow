@@ -21,5 +21,6 @@ public class CareTakerRes {
     String ward;
     String district;
     float rating;
-    int totalReviewers;
+    int numberOfReviews;
+    int totalBookings;
 }
