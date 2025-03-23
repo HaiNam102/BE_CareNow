@@ -20,8 +20,14 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long bookingId;
 
+    @Column(name = "place_name")
+    String placeName;
+
     @Column(name = "booking_address")
     String bookingAddress;
+
+    @Column(name = "description_place")
+    String descriptionPlace;
 
     @Column(name = "day")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

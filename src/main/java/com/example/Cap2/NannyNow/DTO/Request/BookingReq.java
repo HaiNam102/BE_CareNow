@@ -12,7 +12,9 @@ import java.time.LocalTime;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingReq {
+    String placeName;
     String bookingAddress;
+    String descriptionPlace;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate day;
     @JsonFormat(pattern = "HH:mm:ss")

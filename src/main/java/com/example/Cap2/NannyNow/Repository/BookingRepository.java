@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking,Long> {
-    @Query("SELECT b FROM Booking b WHERE b.care_taker.id = :careTakerId AND b.day = :day ORDER BY b.timeToEnd DESC")
+    @Query("SELECT b FROM Booking b WHERE b.care_taker.care_taker_id = :careTakerId AND b.day = :day ORDER BY b.timeToEnd DESC")
     List<Booking> findBookingForDay(@Param("careTakerId") Long careTakerId,@Param("day") LocalDate day);
 }

@@ -33,7 +33,7 @@ public class CareTakerFeedback {
     LocalDate updateAt;
 
     @Column(name = "rating")
-    Integer rating;
+    int rating;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")

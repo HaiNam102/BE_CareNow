@@ -4,6 +4,7 @@ import com.example.Cap2.NannyNow.DTO.Request.CareTakerFeedBackReq;
 import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Service.CareTakerFeedBackService;
+import com.example.Cap2.NannyNow.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,15 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class CareTakerFeedBackController {
     CareTakerFeedBackService careTakerFeedBackService;
-
+    JwtUtil jwtUtil;
     @PostMapping
     public ResponseEntity<?> SaveFeedBack(
             @RequestBody CareTakerFeedBackReq careTakerFeedBackReq,
-            @RequestParam("customer_id") Long customer_id,
+            @RequestHeader("Authorization") String authHeader,
             @RequestParam("careTaker_id") Long careTaker_id
             ){
+        String token = authHeader.replace("Bearer ", "");
+        Long customer_id = jwtUtil.extractUserId(token);
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.ADD_SUCCESSFUL.getCode())
                 .message(SuccessCode.ADD_SUCCESSFUL.getMessage())

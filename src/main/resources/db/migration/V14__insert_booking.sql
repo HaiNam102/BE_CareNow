@@ -1,2 +1,2 @@
-INSERT INTO booking (booking_address, day, time_to_start, time_to_end, service_progress, customer_id, care_taker_id) VALUES
-('123 Street A, Hanoi', '2024-03-01', '08:00:00', '12:00:00', 'In Progress', 1, 1);
+INSERT INTO booking (place_name, booking_address, description_place, day, time_to_start, time_to_end, service_progress, customer_id, care_taker_id) VALUES
+('Benh vien hoi phuc chuc nang','123 Street A, Hanoi','Toa C, phong 123, tang 3', '2024-03-01', '08:00:00', '12:00:00', 'In Progress', 1, 1);

@@ -12,8 +12,10 @@ public enum SuccessCode {
     REGISTER_SUCCESS(20000,"Register success",HttpStatus.CREATED),
     LOGIN_SUCCESS(20001,"Login success",HttpStatus.CREATED),
     GET_SUCCESSFUL(1010, "Get successful", HttpStatus.OK),
-    ADD_SUCCESSFUL(1010, "Add successful data", HttpStatus.OK),
-    ;
+    ADD_SUCCESSFUL(1011, "Add successful data", HttpStatus.OK),
+    UPDATE_SUCCESSFUL(1012, "Update successful", HttpStatus.OK),
+    DELETE_SUCCESSFUL(1013, "Delete successful", HttpStatus.OK);
+
     Integer code;
     String message;
     HttpStatus status;

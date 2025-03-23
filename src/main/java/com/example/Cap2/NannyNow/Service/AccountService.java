@@ -67,7 +67,7 @@ public class AccountService {
             customer.setAccount(account);
             customerRepository.save(customer);
         }
-        if(role.getRoleName().equalsIgnoreCase("CARE_TAKER")){
+        if(role.getRoleName().equalsIgnoreCase("CARETAKER")){
             CareTaker careTaker = careTakerMapper.toCareTaker(registerDTO);
             careTaker.setAccount(account);
             careTakerRepository.save(careTaker);

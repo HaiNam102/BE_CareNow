@@ -38,20 +38,21 @@ public class Customer {
 //    @Column(name = "img_profile")
 //    String imgProfile;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)  // Delete account when customer is deleted
     @JoinColumn(name = "account_id")
     @JsonIgnore
     Account account;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)  // Remove feedbacks on customer delete
     @JsonIgnore
     List<CareTakerFeedback> careTakerFeedbacks;
 
-    @OneToOne(mappedBy = "customer")
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)  // Remove care recipient when customer is deleted
     @JsonIgnoreProperties("customer")
     CareRecipient careRecipient;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)  // Remove bookings when customer is deleted
     @JsonIgnore
     List<Booking> bookings;
+
 }
