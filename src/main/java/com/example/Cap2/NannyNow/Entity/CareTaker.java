@@ -40,7 +40,10 @@ public class CareTaker {
     @Enumerated(EnumType.STRING)
     EGender gender;
 
-    @Column(name = "city")
+    @Column(name = "ward")
+    String ward;
+
+    @Column(name = "district")
     String district;
 
     @Column(name = "workable_area")
@@ -52,8 +55,8 @@ public class CareTaker {
     @Column(name = "service_price")
     String servicePrice;
 
-//    @Column(name = "avarage_rating")
-//    float avarageRating;
+    @Column(name = "avarage_rating")
+    float avarageRating;
 
     @Column(name = "training_status")
     boolean trainingStatus;

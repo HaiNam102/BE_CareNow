@@ -11,10 +11,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CareTakerSearchRes {
+    Long care_taker_id;
     String nameOfCareTaker;
     int experienceYear;
     String imgProfile;
+    String ward;
     String district;
-    int rating;
+    float rating;
+    int totalReviewers;
     String servicePrice;
 }

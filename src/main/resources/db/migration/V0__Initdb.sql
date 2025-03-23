@@ -22,10 +22,11 @@ create table care_taker(
     dob date,
     gender varchar(255),
     district nvarchar(255),
+    ward nvarchar(255),
     workable_area nvarchar(255),
     experience_year int,
     service_price varchar(255),
---    avarage_rating float,
+    avarage_rating float default 0,
     training_status boolean default false,
     account_id bigint
 );

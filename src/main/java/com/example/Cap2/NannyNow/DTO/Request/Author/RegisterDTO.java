@@ -20,7 +20,7 @@ public class RegisterDTO implements Serializable {
     String password;
     String email;
     String phoneNumber;
-    String city;
+    String district;
     String address;
     EGender gender;
     Date dob;

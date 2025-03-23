@@ -16,15 +16,17 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(String username, String role) {
+    public String generateToken(Long accountId, Long customerId, String role) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(accountId.toString()) // Đặt subject là accountId
                 .claim("role", role)
+                .claim("user_id", customerId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Thời gian hết hạn
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // Ký token
                 .compact();
     }
+
 
     public boolean validateToken(String token) {
         try {
@@ -54,6 +56,15 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .get("role");
+    }
+
+    public Long extractUserId(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getSigningKey())
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("user_id", Long.class);
     }
 }
 

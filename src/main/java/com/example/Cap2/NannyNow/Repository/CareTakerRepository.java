@@ -16,7 +16,7 @@ public interface CareTakerRepository extends JpaRepository<CareTaker,Long> {
 
     @Query("SELECT c FROM CareTaker c " +
             "JOIN c.calendars cal " +
-            "WHERE c.city LIKE %:area% " +
+            "WHERE c.district LIKE %:area% " +
             "AND cal.day BETWEEN :dayStart AND :dayEnd")
     public List<CareTaker> getCareTakerByDayAndArea(@Param("area") String area, @Param("dayStart") LocalDate dayStart, @Param("dayEnd") LocalDate dayEnd);
 

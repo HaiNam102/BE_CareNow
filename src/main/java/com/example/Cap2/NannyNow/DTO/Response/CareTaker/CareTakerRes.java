@@ -18,4 +18,8 @@ public class CareTakerRes {
     String servicePrice;
     String introduceYourself;
     String workableArea;
+    String ward;
+    String district;
+    float rating;
+    int totalReviewers;
 }
