@@ -8,6 +8,7 @@ import com.example.Cap2.NannyNow.Entity.CareTakerFeedback;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Mapper.CareTakerMapper;
+import com.example.Cap2.NannyNow.Repository.BookingRepository;
 import com.example.Cap2.NannyNow.Repository.CareTakerFeedBackRepository;
 import com.example.Cap2.NannyNow.Repository.CareTakerRepository;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class CareTakerService {
     CareTakerMapper careTakerMapper;
     CareTakerRepository careTakerRepository;
     CareTakerFeedBackRepository careTakerFeedBackRepository;
+    BookingRepository bookingRepository;
 
     public List<CareTakerRes> getAllCareTaker(){
         List<CareTaker> careTakers = careTakerRepository.findAll();
@@ -34,7 +36,8 @@ public class CareTakerService {
         for(CareTaker careTaker : careTakers){
             updateAverageRating(careTaker);
             CareTakerRes careTakerRes1 = careTakerMapper.toCareTakerRes(careTaker);
-            careTakerRes1.setTotalReviewers(getTotalReviewers(careTaker.getCare_taker_id()));
+            careTakerRes1.setNumberOfReviews(getTotalReviewers(careTaker.getCare_taker_id()));
+            careTakerRes1.setTotalBookings(getCareTakerBookingsCount(careTaker.getCare_taker_id()));
             careTakerRes.add(careTakerRes1);
         }
         return careTakerRes;
@@ -45,7 +48,8 @@ public class CareTakerService {
                 .orElseThrow(()->new ApiException(ErrorCode.USER_NOT_FOUND));
         updateAverageRating(careTaker);
         CareTakerRes careTakerRes = careTakerMapper.toCareTakerRes(careTaker);
-        careTakerRes.setTotalReviewers(getTotalReviewers(careTaker.getCare_taker_id()));
+        careTakerRes.setNumberOfReviews(getTotalReviewers(careTaker.getCare_taker_id()));
+        careTakerRes.setTotalBookings(getCareTakerBookingsCount(careTaker.getCare_taker_id()));
         return careTakerRes;
     }
 
@@ -63,6 +67,7 @@ public class CareTakerService {
             }
             
             careTakerSearchRes.setTotalReviewers(getTotalReviewers(careTaker.getCare_taker_id()));
+            careTakerSearchRes.setTotalBookings(getCareTakerBookingsCount(careTaker.getCare_taker_id()));
             
             careTakerSearchResList.add(careTakerSearchRes);
         }
@@ -75,16 +80,22 @@ public class CareTakerService {
         return count != null ? count : 0;
     }
     
+    public int getCareTakerBookingsCount(Long careTakerId) {
+        return bookingRepository.countBookingsByCareTakerId(careTakerId);
+    }
+
     private void updateAverageRating(CareTaker careTaker) {
-        Double averageRating = Math.round(careTakerFeedBackRepository.getAverageRatingByCareTakerId(careTaker.getCare_taker_id()) *100)/100.0;
-        if (averageRating != null) {
-            careTaker.setAvarageRating(averageRating.floatValue());
-        } else {
-            careTaker.setAvarageRating(0);
+        Double averageRating = careTakerFeedBackRepository.getAverageRatingByCareTakerId(careTaker.getCare_taker_id());
+        if (averageRating == null) {
+            averageRating = 0.0;
         }
+        averageRating = Math.round(averageRating * 100) / 100.0;
+
+        careTaker.setAvarageRating(averageRating.floatValue());
         careTakerRepository.save(careTaker);
     }
-    
+
+
     public float calculateAverageRating(Long careTakerId) {
         List<CareTakerFeedback> feedbacks = careTakerFeedBackRepository.getAllFeedbackByCareTakerId(careTakerId);
         if (feedbacks == null || feedbacks.isEmpty()) {
