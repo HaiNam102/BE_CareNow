@@ -1,7 +1,5 @@
 package com.example.Cap2.NannyNow.DTO.Response.CareTaker;
 
-import com.example.Cap2.NannyNow.Enum.EGender;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,6 +11,7 @@ import java.util.Date;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CareTakerRes {
+    Long care_taker_id;
     String nameOfCareTaker;
     int experienceYear;
     String servicePrice;
