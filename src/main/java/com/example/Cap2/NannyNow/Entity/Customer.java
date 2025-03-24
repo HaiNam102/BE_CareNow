@@ -29,14 +29,11 @@ public class Customer {
     @Column(name = "phone_number")
     String phoneNumber;
 
-    @Column(name = "city")
-    String city;
+    @Column(name = "district")
+    String district;
 
-    @Column(name = "address")
-    String address;
-
-//    @Column(name = "img_profile")
-//    String imgProfile;
+    @Column(name = "ward")
+    String ward;
 
     @OneToOne(cascade = CascadeType.REMOVE)  // Delete account when customer is deleted
     @JoinColumn(name = "account_id")
