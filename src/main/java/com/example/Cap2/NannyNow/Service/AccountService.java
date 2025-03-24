@@ -1,10 +1,12 @@
 package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Request.Author.RegisterDTO;
+import com.example.Cap2.NannyNow.DTO.Request.CareRecipientReq;
 import com.example.Cap2.NannyNow.Entity.*;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Mapper.AccountMapper;
+import com.example.Cap2.NannyNow.Mapper.CareRecipientMapper;
 import com.example.Cap2.NannyNow.Mapper.CareTakerMapper;
 import com.example.Cap2.NannyNow.Mapper.CustomerMapper;
 import com.example.Cap2.NannyNow.Repository.*;
@@ -25,27 +27,27 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService {
     AccountRepository accountRepository;
+    Account_RoleRepository account_RoleRepository;
     RoleRepository roleRepository;
     CustomerRepository customerRepository;
     CareTakerRepository careTakerRepository;
-    PasswordEncoder passwordEncoder;
-    CustomerMapper customerMapper;
-    CareTakerMapper careTakerMapper;
-    AccountMapper accountMapper;
-    ImageRepository imageRepository;
     OptionDetailsOfCareTakerRepository optionDetailsOfCareTakerRepository;
     OptionsDetailsRepository optionsDetailsRepository;
+    ImageRepository imageRepository;
+    CareRecipientRepository careRecipientRepository;
+    PasswordEncoder passwordEncoder;
     CloudinaryService cloudinaryService;
-
-
-    Account_RoleRepository account_RoleRepository;
+    AccountMapper accountMapper;
+    CustomerMapper customerMapper;
+    CareTakerMapper careTakerMapper;
+    CareRecipientMapper careRecipientMapper;
 
     public Account getAccountByUserName(String userName){
         return this.accountRepository.findByUserName(userName);
     }
 
     @Transactional
-    public RegisterDTO register(RegisterDTO registerDTO,MultipartFile imgProfile,MultipartFile imgCccd) throws IOException {
+    public RegisterDTO register(RegisterDTO registerDTO, MultipartFile imgProfile, MultipartFile imgCccd) throws IOException {
         Role role = roleRepository.findByRoleName(registerDTO.getRoleName());
         if(role == null ) {
             throw new ApiException(ErrorCode.INVALID_ROLE);
@@ -65,7 +67,17 @@ public class AccountService {
         if(role.getRoleName().equalsIgnoreCase("CUSTOMER")){
             Customer customer = customerMapper.toCustomer(registerDTO);
             customer.setAccount(account);
-            customerRepository.save(customer);
+            customer = customerRepository.save(customer);
+
+            if (registerDTO.getCareRecipient() != null) {
+                CareRecipientReq careRecipientReq = registerDTO.getCareRecipient();
+                CareRecipient careRecipient = careRecipientMapper.toCareRecipient(careRecipientReq);
+                careRecipient.setCustomer(customer);
+                careRecipient = careRecipientRepository.save(careRecipient);
+                
+                customer.setCareRecipient(careRecipient);
+                customerRepository.save(customer);
+            }
         }
         if(role.getRoleName().equalsIgnoreCase("CARETAKER")){
             CareTaker careTaker = careTakerMapper.toCareTaker(registerDTO);

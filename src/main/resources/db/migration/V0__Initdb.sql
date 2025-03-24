@@ -7,9 +7,8 @@ create table customer(
     name_of_customer nvarchar(255),
     email varchar(255),
     phone_number varchar(11),
-    city nvarchar(255),
-    address nvarchar(255),
---    img_profile nvarchar(255),
+    district nvarchar(255),
+    ward nvarchar(255),
     account_id bigint
 );
 

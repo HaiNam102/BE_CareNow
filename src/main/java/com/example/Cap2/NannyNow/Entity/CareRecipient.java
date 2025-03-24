@@ -15,6 +15,7 @@ public class CareRecipient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "care_recipient_id")
     Long careRecipientId;
 
     @Column(name = "name")

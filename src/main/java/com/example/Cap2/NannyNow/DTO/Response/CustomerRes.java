@@ -12,6 +12,6 @@ public class CustomerRes {
     String nameOfCustomer;
     String email;
     String phoneNumber;
-    String city;
-    String address;
+    String district;
+    String ward;
 }

@@ -8,10 +8,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CustomerReq {
-    String nameOfCustomer;
-    String email;
-    String phoneNumber;
-    String district;
-    String ward;
-}
+public class CareRecipientReq {
+    String name;
+    String gender;
+    String yearOld;
+    String specialDetail;
+} 
