@@ -18,7 +18,9 @@ public enum ErrorCode {
     IMAGE_UPLOAD_FAILED(40901,"Image upload fail",HttpStatus.CONFLICT),
     BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
             "Please select a time that is at least 1 hour after the care taker has been off.", HttpStatus.CONFLICT),
-    OPTION_DETAIL_NOT_FOUND(404055,"Option detail not found",HttpStatus.NOT_FOUND)
+    OPTION_DETAIL_NOT_FOUND(404055,"Option detail not found",HttpStatus.NOT_FOUND),
+    OPTION_NOT_FOUND(404056, "Option not found", HttpStatus.NOT_FOUND),
+    OPTION_DETAIL_OF_CARETAKER_NOT_FOUND(404055, "Option detail of caretaker not found", HttpStatus.NOT_FOUND)
     ;
     Integer code;
     String message;
