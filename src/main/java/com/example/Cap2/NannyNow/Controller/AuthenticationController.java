@@ -67,7 +67,7 @@ public class AuthenticationController {
                     userId = account.getCustomer().getCustomer_id();
                 }
                 break;
-            case "CARETAKER":
+            case "CARE_TAKER":
                 if (account.getCareTaker() != null) {
                     userId = account.getCareTaker().getCare_taker_id();
                 }

@@ -4,6 +4,7 @@ import com.example.Cap2.NannyNow.DTO.Request.CustomerReq;
 import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Service.CustomerService;
+import com.example.Cap2.NannyNow.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
     CustomerService customerService;
+    JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<?> getAllCustomers() {
@@ -26,12 +28,15 @@ public class CustomerController {
         );
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
+    @GetMapping("/getByCustomerId")
+    public ResponseEntity<?> getCustomerById(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Long customerId = jwtUtil.extractUserId(token);
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(customerService.getCustomerById(id))
+                .data(customerService.getCustomerById(customerId))
                 .build()
         );
     }
@@ -46,12 +51,15 @@ public class CustomerController {
         );
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody CustomerReq customerReq) {
+    @PutMapping
+    public ResponseEntity<?> updateCustomer(@RequestHeader("Authorization") String authHeader,@RequestBody CustomerReq customerReq) {
+        String token = authHeader.replace("Bearer ", "");
+        Long customerId = jwtUtil.extractUserId(token);
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.UPDATE_SUCCESSFUL.getCode())
                 .message(SuccessCode.UPDATE_SUCCESSFUL.getMessage())
-                .data(customerService.updateCustomer(id, customerReq))
+                .data(customerService.updateCustomer(customerId, customerReq))
                 .build()
         );
     }

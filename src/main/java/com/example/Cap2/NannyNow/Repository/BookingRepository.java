@@ -22,4 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
     
     @Query("SELECT COUNT(DISTINCT b.bookingId) FROM Booking b WHERE b.care_taker.care_taker_id = :careTakerId")
     int countBookingsByCareTakerId(@Param("careTakerId") Long careTakerId);
+
+    @Query("SELECT b FROM Booking b WHERE b.customer.customer_id = :customerId ORDER BY b.bookingId DESC")
+    List<Booking> findBookingsByCustomerId(@Param("customerId") Long customerId);
 }

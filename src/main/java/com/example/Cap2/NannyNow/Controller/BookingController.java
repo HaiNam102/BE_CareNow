@@ -55,4 +55,17 @@ public class BookingController {
                 .build()
         );
     }
+
+    @GetMapping("/customer")
+    public ResponseEntity<?> getCustomerBookings(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Long customerId = jwtUtil.extractUserId(token);
+        
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(bookingService.getBookingsByCustomerId(customerId))
+                .build()
+        );
+    }
 }

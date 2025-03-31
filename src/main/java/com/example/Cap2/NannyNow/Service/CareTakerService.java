@@ -84,7 +84,7 @@ public class CareTakerService {
         return bookingRepository.countBookingsByCareTakerId(careTakerId);
     }
 
-    private void updateAverageRating(CareTaker careTaker) {
+    public void updateAverageRating(CareTaker careTaker) {
         Double averageRating = careTakerFeedBackRepository.getAverageRatingByCareTakerId(careTaker.getCare_taker_id());
         if (averageRating == null) {
             averageRating = 0.0;

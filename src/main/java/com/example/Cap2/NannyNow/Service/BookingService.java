@@ -33,6 +33,7 @@ public class BookingService {
     BookingMapper bookingMapper;
     CareTakerRepository careTakerRepository;
     CustomerRepository customerRepository;
+    CareTakerService careTakerService;
 
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime) {
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
@@ -95,21 +96,12 @@ public class BookingService {
         
         BookingDTO bookingDTO = new BookingDTO();
         bookingDTO.setBookingId(booking.getBookingId());
-        bookingDTO.setPlaceName(booking.getPlaceName());
         bookingDTO.setLocationType(booking.getLocationType());
-        bookingDTO.setBookingAddress(booking.getBookingAddress());
-        bookingDTO.setDescriptionPlace(booking.getDescriptionPlace());
-        bookingDTO.setTimeToStart(booking.getTimeToStart());
-        bookingDTO.setTimeToEnd(booking.getTimeToEnd());
         bookingDTO.setServiceProgress(booking.getServiceProgress());
-
-        if (booking.getCustomer() != null) {
-            bookingDTO.setCustomerId(booking.getCustomer().getCustomer_id());
-            bookingDTO.setCustomerName(booking.getCustomer().getNameOfCustomer());
-        }
-
+        careTakerService.updateAverageRating(booking.getCare_taker());
+        bookingDTO.setRating(booking.getCare_taker().getCare_taker_id());
+        bookingDTO.setToltalReviewers(careTakerService.getTotalReviewers(booking.getCare_taker().getCare_taker_id()));
         if (booking.getCare_taker() != null) {
-            bookingDTO.setCareTakerId(booking.getCare_taker().getCare_taker_id());
             bookingDTO.setCareTakerName(booking.getCare_taker().getNameOfCareTaker());
         }
 
@@ -121,7 +113,7 @@ public class BookingService {
         } else {
             bookingDTO.setDays(new ArrayList<>());
         }
-        
+
         return bookingDTO;
     }
     
@@ -136,5 +128,12 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
         return convertToBookingDTO(booking);
+    }
+
+    public List<BookingDTO> getBookingsByCustomerId(Long customerId) {
+        List<Booking> bookings = bookingRepository.findBookingsByCustomerId(customerId);
+        return bookings.stream()
+                .map(this::convertToBookingDTO)
+                .collect(Collectors.toList());
     }
 }

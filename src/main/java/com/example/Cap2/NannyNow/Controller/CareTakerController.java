@@ -4,6 +4,7 @@ import com.example.Cap2.NannyNow.DTO.Request.CareTakerReq;
 import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Service.CareTakerService;
+import com.example.Cap2.NannyNow.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,7 +22,7 @@ import java.util.HashMap;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class CareTakerController {
     CareTakerService careTakerService;
-
+    JwtUtil jwtUtil;
     @GetMapping
     public ResponseEntity<?> getAllCareTaker(){
         return ResponseEntity.ok(ApiResponse.builder()
@@ -32,12 +33,14 @@ public class CareTakerController {
         );
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCareTakerById(@PathVariable Long id){
+    @GetMapping("/getCareTakerId")
+    public ResponseEntity<?> getCareTakerById(@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.replace("Bearer ", "");
+        Long careTakerId = jwtUtil.extractUserId(token);
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(careTakerService.getCareTakerById(id))
+                .data(careTakerService.getCareTakerById(careTakerId))
                 .build()
         );
     }
@@ -54,39 +57,41 @@ public class CareTakerController {
         );
     }
 
-    @GetMapping("/{id}/rating")
-    public ResponseEntity<?> getCareTakerRating(@PathVariable Long id) {
-        float averageRating = careTakerService.calculateAverageRating(id);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .code(SuccessCode.GET_SUCCESSFUL.getCode())
-                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(averageRating)
-                .build()
-        );
-    }
+//    @GetMapping("/{id}/rating")
+//    public ResponseEntity<?> getCareTakerRating(@PathVariable Long id) {
+//        float averageRating = careTakerService.calculateAverageRating(id);
+//        return ResponseEntity.ok(ApiResponse.builder()
+//                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+//                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+//                .data(averageRating)
+//                .build()
+//        );
+//    }
 
-    @GetMapping("/{id}/reviewers")
-    public ResponseEntity<?> getCareTakerReviewers(@PathVariable Long id) {
-        int totalReviewers = careTakerService.getTotalReviewers(id);
-        
-        Map<String, Object> result = new HashMap<>();
-        result.put("totalReviewers", totalReviewers);
-        result.put("rating", careTakerService.calculateAverageRating(id));
-        
-        return ResponseEntity.ok(ApiResponse.builder()
-                .code(SuccessCode.GET_SUCCESSFUL.getCode())
-                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(result)
-                .build()
-        );
-    }
+//    @GetMapping("/{id}/reviewers")
+//    public ResponseEntity<?> getCareTakerReviewers(@PathVariable Long id) {
+//        int totalReviewers = careTakerService.getTotalReviewers(id);
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("totalReviewers", totalReviewers);
+//        result.put("rating", careTakerService.calculateAverageRating(id));
+//
+//        return ResponseEntity.ok(ApiResponse.builder()
+//                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+//                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+//                .data(result)
+//                .build()
+//        );
+//    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCareTaker(@PathVariable Long id, @RequestBody CareTakerReq careTakerReq) {
+    public ResponseEntity<?> updateCareTaker(@RequestHeader("Authorization") String authHeader,@RequestBody CareTakerReq careTakerReq) {
+        String token = authHeader.replace("Bearer ", "");
+        Long careTakerId = jwtUtil.extractUserId(token);
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.UPDATE_SUCCESSFUL.getCode())
                 .message(SuccessCode.UPDATE_SUCCESSFUL.getMessage())
-                .data(careTakerService.updateCareTaker(id, careTakerReq))
+                .data(careTakerService.updateCareTaker(careTakerId, careTakerReq))
                 .build()
         );
     }
