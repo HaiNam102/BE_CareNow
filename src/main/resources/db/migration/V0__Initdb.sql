@@ -117,7 +117,8 @@ create table booking(
     description_place nvarchar(255),
     time_to_start time not null,
     time_to_end time not null,
-    service_progress nvarchar(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+    service_progress nvarchar(255) DEFAULT 'PENDING',
     customer_id bigint,
     care_taker_id bigint
 );

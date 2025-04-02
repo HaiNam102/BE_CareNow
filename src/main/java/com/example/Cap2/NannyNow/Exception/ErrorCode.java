@@ -13,7 +13,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(40401, "invalid password", HttpStatus.NOT_FOUND),
     INVALID_ACCOUNT(40402, "invalid account", HttpStatus.NOT_FOUND),
     INVALID_ROLE(40403, "invalid role", HttpStatus.NOT_FOUND),
-    USER_NOT_FOUND(40400, "customer or care taker not found", HttpStatus.NOT_FOUND),
+    USER_NOT_FOUND(40404, "customer or care taker not found", HttpStatus.NOT_FOUND),
+    INVALID_BOOKING(40405, "invalid username", HttpStatus.NOT_FOUND),
     MAIL_PHONE_USERNAME_ALREADY_EXITS(40900, "userName, Mail or Phone already exits ", HttpStatus.CONFLICT),
     IMAGE_UPLOAD_FAILED(40901,"Image upload fail",HttpStatus.CONFLICT),
     BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
