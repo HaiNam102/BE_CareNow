@@ -2,10 +2,12 @@ package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Request.BookingReq;
 import com.example.Cap2.NannyNow.DTO.Response.BookingDTO;
+import com.example.Cap2.NannyNow.DTO.Response.BookingRes;
 import com.example.Cap2.NannyNow.Entity.Booking;
 import com.example.Cap2.NannyNow.Entity.BookingDay;
 import com.example.Cap2.NannyNow.Entity.CareTaker;
 import com.example.Cap2.NannyNow.Entity.Customer;
+import com.example.Cap2.NannyNow.Enum.EStatus;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Mapper.BookingMapper;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,7 @@ public class BookingService {
     BookingMapper bookingMapper;
     CareTakerRepository careTakerRepository;
     CustomerRepository customerRepository;
+    CareTakerService careTakerService;
 
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime) {
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
@@ -50,7 +54,7 @@ public class BookingService {
 
         return requestedStartTime.isAfter(lastedEndTime.plusHours(1));
     }
-    
+
     public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime) {
         for (LocalDate day : days) {
             if (!isValidBooking(careTakerId, day, requestedStartTime)) {
@@ -75,7 +79,8 @@ public class BookingService {
         booking.setCustomer(customer);
         booking.setCare_taker(careTaker);
         booking.setBookingDays(new ArrayList<>());
-
+        booking.setCreatedAt(LocalDate.from(LocalDateTime.now()));
+        booking.setServiceProgress(EStatus.PENDING);
         booking = bookingRepository.save(booking);
 
         for (LocalDate day : bookingReq.getDays()) {
@@ -87,54 +92,69 @@ public class BookingService {
 
         return bookingRepository.save(booking);
     }
-    
+
     public BookingDTO convertToBookingDTO(Booking booking) {
         if (booking == null) {
             return null;
         }
-        
+
         BookingDTO bookingDTO = new BookingDTO();
         bookingDTO.setBookingId(booking.getBookingId());
-        bookingDTO.setPlaceName(booking.getPlaceName());
         bookingDTO.setLocationType(booking.getLocationType());
-        bookingDTO.setBookingAddress(booking.getBookingAddress());
-        bookingDTO.setDescriptionPlace(booking.getDescriptionPlace());
-        bookingDTO.setTimeToStart(booking.getTimeToStart());
-        bookingDTO.setTimeToEnd(booking.getTimeToEnd());
-        bookingDTO.setServiceProgress(booking.getServiceProgress());
-
-        if (booking.getCustomer() != null) {
-            bookingDTO.setCustomerId(booking.getCustomer().getCustomer_id());
-            bookingDTO.setCustomerName(booking.getCustomer().getNameOfCustomer());
-        }
-
+        bookingDTO.setServiceProgress(String.valueOf(booking.getServiceProgress()));
+        careTakerService.updateAverageRating(booking.getCare_taker());
+        bookingDTO.setRating(booking.getCare_taker().getCare_taker_id());
+        bookingDTO.setToltalReviewers(careTakerService.getTotalReviewers(booking.getCare_taker().getCare_taker_id()));
         if (booking.getCare_taker() != null) {
-            bookingDTO.setCareTakerId(booking.getCare_taker().getCare_taker_id());
             bookingDTO.setCareTakerName(booking.getCare_taker().getNameOfCareTaker());
         }
-
-        if (booking.getBookingDays() != null && !booking.getBookingDays().isEmpty()) {
-            List<LocalDate> days = booking.getBookingDays().stream()
-                    .map(BookingDay::getDay)
-                    .collect(Collectors.toList());
-            bookingDTO.setDays(days);
-        } else {
-            bookingDTO.setDays(new ArrayList<>());
-        }
-        
+//        if (booking.getBookingDays() != null && !booking.getBookingDays().isEmpty()) {
+//            List<LocalDate> days = booking.getBookingDays().stream()
+//                    .map(BookingDay::getDay)
+//                    .collect(Collectors.toList());
+//            bookingDTO.setDays(days);
+//        } else {
+//            bookingDTO.setDays(new ArrayList<>());
+//        }
+        bookingDTO.setCreatedAt(booking.getCreatedAt());
         return bookingDTO;
     }
-    
+
     public List<BookingDTO> getAllBookings() {
         List<Booking> bookings = bookingRepository.findAll();
         return bookings.stream()
                 .map(this::convertToBookingDTO)
                 .collect(Collectors.toList());
     }
-    
+
     public BookingDTO getBookingById(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
         return convertToBookingDTO(booking);
     }
+
+    public List<BookingDTO> getBookingsByCustomerId(Long customerId) {
+        List<Booking> bookings = bookingRepository.findBookingsByCustomerId(customerId);
+        return bookings.stream()
+                .map(this::convertToBookingDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookingRes> getBookingsByCareTakerId(Long careTakerId) {
+        List<Booking> bookings = bookingRepository.findByCareTakerId(careTakerId);
+        return bookings.stream()
+                .map(bookingMapper::toBookingRes)
+                .collect(Collectors.toList());
+    }
+
+    public Booking updateBookingStatus(Long bookingId, EStatus status) {
+        Booking optionalBooking = bookingRepository.findById(bookingId).orElseThrow(()->new ApiException(ErrorCode.USER_NOT_FOUND));
+        if (optionalBooking != null) {
+            optionalBooking.setServiceProgress(status);
+            return bookingRepository.save(optionalBooking);
+        }
+        throw new RuntimeException("Booking not found");
+    }
+
+
 }

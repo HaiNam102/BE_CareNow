@@ -52,6 +52,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/customer/**").permitAll()
                         .requestMatchers("/api/careTakerFeedBack/**").permitAll()
                         .requestMatchers("/api/booking/**").permitAll()
+                        .requestMatchers("/api/careRecipient/**").permitAll()
+                        .requestMatchers("/api/calendar/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions ->

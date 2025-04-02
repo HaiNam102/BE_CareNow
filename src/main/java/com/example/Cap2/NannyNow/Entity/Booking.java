@@ -1,6 +1,7 @@
 package com.example.Cap2.NannyNow.Entity;
 
 import com.example.Cap2.NannyNow.Enum.ELocationType;
+import com.example.Cap2.NannyNow.Enum.EStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,7 +45,12 @@ public class Booking {
     LocalTime timeToEnd;
 
     @Column(name = "service_progress")
-    String serviceProgress;
+    @Enumerated(EnumType.STRING)
+    EStatus serviceProgress;
+
+    @Column(name = "created_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate createdAt;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
