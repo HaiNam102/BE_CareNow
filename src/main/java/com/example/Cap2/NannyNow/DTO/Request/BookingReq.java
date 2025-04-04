@@ -25,4 +25,5 @@ public class BookingReq {
     LocalTime timeToStart;
     @JsonFormat(pattern = "HH:mm:ss")
     LocalTime timeToEnd;
+    String jobDescription;
 }

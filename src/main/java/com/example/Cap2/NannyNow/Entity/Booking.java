@@ -48,6 +48,9 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     EStatus serviceProgress;
 
+    @Column(name = "job_description")
+    String jobDescription;
+
     @Column(name = "created_at")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate createdAt;
