@@ -30,7 +30,7 @@ public class CareRecipient {
     @Column(name = "special_detail", length = 1000)
     String specialDetail;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     Customer customer;
 }

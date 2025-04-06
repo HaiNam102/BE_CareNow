@@ -23,4 +23,6 @@ public class BookingDTO {
     String careTakerName;
     float rating;
     int toltalReviewers;
+    Long careRecipientId;
+    String careRecipientName;
 } 

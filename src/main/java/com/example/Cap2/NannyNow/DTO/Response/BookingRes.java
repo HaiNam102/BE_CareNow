@@ -2,6 +2,7 @@ package com.example.Cap2.NannyNow.DTO.Response;
 
 import com.example.Cap2.NannyNow.Entity.BookingDay;
 import com.example.Cap2.NannyNow.Enum.ELocationType;
+import com.example.Cap2.NannyNow.Enum.EStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -30,4 +31,7 @@ public class BookingRes {
     String servicePrice;
     ELocationType locationType;
     String jobDescription;
+    EStatus serviceProgress;
+    Long careRecipientId;
+    String careRecipientName;
 }

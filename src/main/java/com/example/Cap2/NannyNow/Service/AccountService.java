@@ -73,10 +73,15 @@ public class AccountService {
                 CareRecipientReq careRecipientReq = registerDTO.getCareRecipient();
                 CareRecipient careRecipient = careRecipientMapper.toCareRecipient(careRecipientReq);
                 careRecipient.setCustomer(customer);
-                careRecipient = careRecipientRepository.save(careRecipient);
-                
-                customer.setCareRecipient(careRecipient);
-                customerRepository.save(customer);
+                careRecipientRepository.save(careRecipient);
+            }
+            
+            if (registerDTO.getCareRecipients() != null && !registerDTO.getCareRecipients().isEmpty()) {
+                for (CareRecipientReq careRecipientReq : registerDTO.getCareRecipients()) {
+                    CareRecipient careRecipient = careRecipientMapper.toCareRecipient(careRecipientReq);
+                    careRecipient.setCustomer(customer);
+                    careRecipientRepository.save(careRecipient);
+                }
             }
         }
         if(role.getRoleName().equalsIgnoreCase("CARE_TAKER")){

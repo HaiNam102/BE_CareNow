@@ -21,6 +21,7 @@ public interface BookingMapper {
     @Mapping(target = "bookingId", ignore = true)
     @Mapping(target = "customer", ignore = true)
     @Mapping(target = "care_taker", ignore = true)
+    @Mapping(target = "careRecipient", ignore = true)
     @Mapping(target = "payment", ignore = true)
     Booking toBooking(BookingReq bookingReq);
 
@@ -28,6 +29,9 @@ public interface BookingMapper {
     @Mapping(source = "customer.nameOfCustomer", target = "customerName")
     @Mapping(source = "bookingDays", target = "days", qualifiedByName = "mapBookingDaysToLocalDate")
     @Mapping(source = "payment.price", target = "servicePrice")
+    @Mapping(source = "serviceProgress", target = "serviceProgress")
+    @Mapping(source = "careRecipient.careRecipientId", target = "careRecipientId")
+    @Mapping(source = "careRecipient.name", target = "careRecipientName")
     BookingRes toBookingRes(Booking booking);
 
     @Named("mapBookingDaysToLocalDate")

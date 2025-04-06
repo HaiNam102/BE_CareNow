@@ -15,6 +15,8 @@ public enum ErrorCode {
     INVALID_ROLE(40403, "invalid role", HttpStatus.NOT_FOUND),
     USER_NOT_FOUND(40404, "customer or care taker not found", HttpStatus.NOT_FOUND),
     INVALID_BOOKING(40405, "invalid username", HttpStatus.NOT_FOUND),
+    CARE_RECIPIENT_NOT_FOUND(40406, "care recipient not found", HttpStatus.NOT_FOUND),
+    CARE_RECIPIENT_NOT_BELONG_TO_CUSTOMER(40407, "care recipient does not belong to this customer", HttpStatus.FORBIDDEN),
     MAIL_PHONE_USERNAME_ALREADY_EXITS(40900, "userName, Mail or Phone already exits ", HttpStatus.CONFLICT),
     IMAGE_UPLOAD_FAILED(40901,"Image upload fail",HttpStatus.CONFLICT),
     BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
