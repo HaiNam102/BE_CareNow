@@ -84,7 +84,7 @@ public class CareTakerController {
 //        );
 //    }
 
-    @PutMapping("/{id}")
+    @PutMapping
     public ResponseEntity<?> updateCareTaker(@RequestHeader("Authorization") String authHeader,@RequestBody CareTakerReq careTakerReq) {
         String token = authHeader.replace("Bearer ", "");
         Long careTakerId = jwtUtil.extractUserId(token);

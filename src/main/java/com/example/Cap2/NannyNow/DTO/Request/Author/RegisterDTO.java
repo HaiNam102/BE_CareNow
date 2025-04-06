@@ -32,5 +32,8 @@ public class RegisterDTO implements Serializable {
     int experienceYear;
     String servicePrice;
     List<Long> selectedOptionDetailIds;
-    CareRecipientReq careRecipient;
+    
+    // Hỗ trợ cả danh sách care recipients và một care recipient duy nhất
+    CareRecipientReq careRecipient; // Để hỗ trợ backward compatibility
+    List<CareRecipientReq> careRecipients;
 }

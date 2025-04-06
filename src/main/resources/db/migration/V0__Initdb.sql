@@ -121,7 +121,8 @@ create table booking(
     service_progress nvarchar(255) DEFAULT 'PENDING',
     job_description nvarchar(1000),
     customer_id bigint,
-    care_taker_id bigint
+    care_taker_id bigint,
+    care_recipient_id bigint
 );
 
 create table payment(
@@ -175,4 +176,5 @@ ADD CONSTRAINT fk_option_details_of_care_taker_care_taker FOREIGN KEY (care_take
 ALTER TABLE option_details
 ADD CONSTRAINT fk_option_details_options FOREIGN KEY (options_id) REFERENCES options(options_id) ON DELETE CASCADE;
 
-
+ALTER TABLE booking
+ADD CONSTRAINT fk_booking_care_recipient FOREIGN KEY (care_recipient_id) REFERENCES care_recipient(care_recipient_id) ON DELETE SET NULL;

@@ -18,14 +18,14 @@ public class CareRecipientController {
     JwtUtil jwtUtil;
 
     @GetMapping("/customer")
-    public ResponseEntity<?> getCareRecipientByCustomerId(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> getCareRecipientsByCustomerId(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         Long customerId = jwtUtil.extractUserId(token);
         
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(careRecipientService.getCareRecipientByCustomerId(customerId))
+                .data(careRecipientService.getCareRecipientsByCustomerId(customerId))
                 .build()
         );
     }

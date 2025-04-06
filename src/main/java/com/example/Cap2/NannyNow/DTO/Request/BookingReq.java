@@ -26,4 +26,5 @@ public class BookingReq {
     @JsonFormat(pattern = "HH:mm:ss")
     LocalTime timeToEnd;
     String jobDescription;
+    Long careRecipientId;
 }

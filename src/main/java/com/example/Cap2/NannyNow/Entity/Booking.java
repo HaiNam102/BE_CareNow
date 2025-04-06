@@ -62,6 +62,10 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "care_taker_id")
     CareTaker care_taker;
+    
+    @ManyToOne
+    @JoinColumn(name = "care_recipient_id")
+    CareRecipient careRecipient;
 
     @OneToOne(mappedBy = "booking")
     Payment payment;

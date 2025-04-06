@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CareRecipientRes {
+    Long careRecipientId;
     String name;
     EGender gender;
     String yearOld;

@@ -44,9 +44,9 @@ public class Customer {
     @JsonIgnore
     List<CareTakerFeedback> careTakerFeedbacks;
 
-    @OneToOne(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)  // Remove care recipient when customer is deleted
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)  // Remove care recipients when customer is deleted
     @JsonIgnoreProperties("customer")
-    CareRecipient careRecipient;
+    List<CareRecipient> careRecipients;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)  // Remove bookings when customer is deleted
     @JsonIgnore
