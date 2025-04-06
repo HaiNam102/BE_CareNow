@@ -12,12 +12,15 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CalendarRes {
-    Long calendarId;
-    
+public class BookedTimeSlotRes {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate day;
     
-    Long careTakerId;
-    String careTakerName;
+    @JsonFormat(pattern = "HH:mm:ss")
+    LocalTime timeToStart;
+    
+    @JsonFormat(pattern = "HH:mm:ss")
+    LocalTime timeToEnd;
+    
+    String status;
 } 
