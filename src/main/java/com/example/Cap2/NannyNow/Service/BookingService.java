@@ -1,6 +1,7 @@
 package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Request.BookingReq;
+import com.example.Cap2.NannyNow.DTO.Response.BookedTimeSlotRes;
 import com.example.Cap2.NannyNow.DTO.Response.BookingDTO;
 import com.example.Cap2.NannyNow.DTO.Response.BookingRes;
 import com.example.Cap2.NannyNow.Entity.Booking;
@@ -41,30 +42,52 @@ public class BookingService {
     CareTakerService careTakerService;
     CareRecipientRepository careRecipientRepository;
 
-    public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime) {
+    public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime, LocalTime requestedEndTime) {
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
-        LocalTime lastedEndTime = null;
-
+        
+        // Kiểm tra xem thời gian định đặt có trùng với booking nào đã tồn tại không
         for (Booking booking : bookings) {
-            if (lastedEndTime == null || booking.getTimeToEnd().isAfter(lastedEndTime)) {
-                lastedEndTime = booking.getTimeToEnd();
+            LocalTime existingStartTime = booking.getTimeToStart();
+            LocalTime existingEndTime = booking.getTimeToEnd();
+            
+            // Trường hợp 1: Thời gian bắt đầu của booking mới nằm trong khoảng thời gian của booking đã tồn tại
+            // requestedStartTime >= existingStartTime và requestedStartTime < existingEndTime
+            boolean startTimeOverlap = !requestedStartTime.isBefore(existingStartTime) && requestedStartTime.isBefore(existingEndTime);
+            
+            // Trường hợp 2: Thời gian kết thúc của booking mới nằm trong khoảng thời gian của booking đã tồn tại
+            // requestedEndTime > existingStartTime và requestedEndTime <= existingEndTime
+            boolean endTimeOverlap = requestedEndTime.isAfter(existingStartTime) && !requestedEndTime.isAfter(existingEndTime);
+            
+            // Trường hợp 3: Booking mới bao trùm booking đã tồn tại
+            // requestedStartTime <= existingStartTime và requestedEndTime >= existingEndTime
+            boolean bookingCoversExisting = !requestedStartTime.isAfter(existingStartTime) && !requestedEndTime.isBefore(existingEndTime);
+            
+            if (startTimeOverlap || endTimeOverlap || bookingCoversExisting) {
+                return false;
             }
         }
-
-        if (lastedEndTime == null) {
-            return true;
-        }
-
-        return requestedStartTime.isAfter(lastedEndTime.plusHours(1));
+        
+        return true;
     }
 
-    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime) {
+    public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime) {
+        // Mặc định thời gian kết thúc là 1 giờ sau thời gian bắt đầu
+        LocalTime requestedEndTime = requestedStartTime.plusHours(1);
+        return isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime);
+    }
+
+    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime, LocalTime requestedEndTime) {
         for (LocalDate day : days) {
-            if (!isValidBooking(careTakerId, day, requestedStartTime)) {
+            if (!isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime)) {
                 return false;
             }
         }
         return true;
+    }
+
+    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime) {
+        LocalTime requestedEndTime = requestedStartTime.plusHours(1);
+        return areAllDaysValid(careTakerId, days, requestedStartTime, requestedEndTime);
     }
 
     @Transactional
@@ -87,8 +110,9 @@ public class BookingService {
             }
         }
 
-        if (!areAllDaysValid(careTakerId, bookingReq.getDays(), bookingReq.getTimeToStart())) {
-            throw new ApiException(ErrorCode.BOOKING_REQUEST);
+        // Kiểm tra xem thời gian định đặt có hợp lệ không (không trùng với booking nào đã tồn tại)
+        if (!areAllDaysValid(careTakerId, bookingReq.getDays(), bookingReq.getTimeToStart(), bookingReq.getTimeToEnd())) {
+            throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
         }
 
         Booking booking = bookingMapper.toBooking(bookingReq);
@@ -173,5 +197,42 @@ public class BookingService {
         throw new RuntimeException("Booking not found");
     }
 
-
+    /**
+     * Lấy danh sách các time slot đã đặt của một careTaker trong một ngày cụ thể
+     * @param careTakerId ID của careTaker cần kiểm tra
+     * @param day ngày cần kiểm tra
+     * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
+     */
+    public List<BookedTimeSlotRes> getBookedTimeSlots(Long careTakerId, LocalDate day) {
+        List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
+        return bookings.stream()
+                .map(booking -> {
+                    BookedTimeSlotRes timeSlot = new BookedTimeSlotRes();
+                    timeSlot.setDay(day);
+                    timeSlot.setTimeToStart(booking.getTimeToStart());
+                    timeSlot.setTimeToEnd(booking.getTimeToEnd());
+                    timeSlot.setStatus(booking.getServiceProgress().toString());
+                    return timeSlot;
+                })
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Lấy danh sách các time slot đã đặt của một careTaker trong một khoảng ngày
+     * @param careTakerId ID của careTaker cần kiểm tra
+     * @param startDay ngày bắt đầu
+     * @param endDay ngày kết thúc
+     * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
+     */
+    public List<BookedTimeSlotRes> getBookedTimeSlotsInRange(Long careTakerId, LocalDate startDay, LocalDate endDay) {
+        List<BookedTimeSlotRes> result = new ArrayList<>();
+        LocalDate currentDay = startDay;
+        
+        while (!currentDay.isAfter(endDay)) {
+            result.addAll(getBookedTimeSlots(careTakerId, currentDay));
+            currentDay = currentDay.plusDays(1);
+        }
+        
+        return result;
+    }
 }

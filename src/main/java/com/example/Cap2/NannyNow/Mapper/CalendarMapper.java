@@ -10,5 +10,7 @@ import org.mapstruct.factory.Mappers;
 public interface CalendarMapper {
     CalendarMapper INSTANCE = Mappers.getMapper(CalendarMapper.class);
 
+    @Mapping(source = "care_taker.care_taker_id", target = "careTakerId")
+    @Mapping(source = "care_taker.nameOfCareTaker", target = "careTakerName")
     CalendarRes toCalendarRes(Calendar calendar);
 } 

@@ -21,6 +21,7 @@ public enum ErrorCode {
     IMAGE_UPLOAD_FAILED(40901,"Image upload fail",HttpStatus.CONFLICT),
     BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
             "Please select a time that is at least 1 hour after the care taker has been off.", HttpStatus.CONFLICT),
+    BOOKING_TIME_CONFLICT(40903, "Thời gian này đã có người đặt. Vui lòng chọn thời gian khác.", HttpStatus.CONFLICT),
     OPTION_DETAIL_NOT_FOUND(404055,"Option detail not found",HttpStatus.NOT_FOUND)
     ;
     Integer code;

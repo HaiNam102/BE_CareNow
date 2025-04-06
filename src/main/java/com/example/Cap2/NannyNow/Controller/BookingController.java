@@ -2,6 +2,7 @@ package com.example.Cap2.NannyNow.Controller;
 
 import com.example.Cap2.NannyNow.DTO.Request.BookingReq;
 import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
+import com.example.Cap2.NannyNow.DTO.Response.BookedTimeSlotRes;
 import com.example.Cap2.NannyNow.DTO.Response.BookingDTO;
 import com.example.Cap2.NannyNow.DTO.Response.BookingRes;
 import com.example.Cap2.NannyNow.Entity.Booking;
@@ -11,9 +12,11 @@ import com.example.Cap2.NannyNow.Service.BookingService;
 import com.example.Cap2.NannyNow.jwt.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -95,5 +98,47 @@ public class BookingController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid status");
         }
+    }
+
+    /**
+     * API lấy danh sách các time slot đã đặt của một careTaker trong một ngày cụ thể
+     * 
+     * @param careTakerId ID của careTaker cần kiểm tra
+     * @param day ngày cần kiểm tra
+     * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
+     */
+    @GetMapping("/booked-slots/caretaker/{careTakerId}")
+    public ResponseEntity<?> getBookedTimeSlots(
+            @PathVariable Long careTakerId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
+        
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(bookingService.getBookedTimeSlots(careTakerId, day))
+                .build()
+        );
+    }
+    
+    /**
+     * API lấy danh sách các time slot đã đặt của một careTaker trong một khoảng ngày
+     * 
+     * @param careTakerId ID của careTaker cần kiểm tra
+     * @param startDay ngày bắt đầu
+     * @param endDay ngày kết thúc
+     * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
+     */
+    @GetMapping("/booked-slots/caretaker/{careTakerId}/range")
+    public ResponseEntity<?> getBookedTimeSlotsInRange(
+            @PathVariable Long careTakerId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDay,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDay) {
+        
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(bookingService.getBookedTimeSlotsInRange(careTakerId, startDay, endDay))
+                .build()
+        );
     }
 }

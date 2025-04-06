@@ -23,10 +23,19 @@ public class CalendarService {
     CareTakerRepository careTakerRepository;
     CalendarMapper calendarMapper;
 
+    /**
+     * Lấy tất cả lịch làm việc (calendar) của một careTaker
+     * @param careTakerId ID của care taker
+     * @return Danh sách CalendarRes chứa thông tin lịch làm việc
+     */
     public List<CalendarRes> getCalendarsByCareTakerId(Long careTakerId) {
         CareTaker careTaker = careTakerRepository.findById(careTakerId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+                
+        // Lấy danh sách các calendar của careTaker
         List<Calendar> calendars = calendarRepository.findByCareTakerId(careTakerId);
+        
+        // Chuyển đổi sang DTO và trả về
         return calendars.stream()
                 .map(calendarMapper::toCalendarRes)
                 .collect(Collectors.toList());
