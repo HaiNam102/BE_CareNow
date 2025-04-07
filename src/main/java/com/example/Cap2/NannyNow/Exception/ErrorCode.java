@@ -6,8 +6,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
     INVALID_USERNAME(40400, "invalid username", HttpStatus.NOT_FOUND),
     INVALID_PASSWORD(40401, "invalid password", HttpStatus.NOT_FOUND),
@@ -22,9 +20,17 @@ public enum ErrorCode {
     BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
             "Please select a time that is at least 1 hour after the care taker has been off.", HttpStatus.CONFLICT),
     BOOKING_TIME_CONFLICT(40903, "Thời gian này đã có người đặt. Vui lòng chọn thời gian khác.", HttpStatus.CONFLICT),
-    OPTION_DETAIL_NOT_FOUND(404055,"Option detail not found",HttpStatus.NOT_FOUND)
+    BOOKING_TIME_TOO_CLOSE(40904, "Thời gian đặt lịch phải cách thời gian hiện tại ít nhất 1 tiếng", HttpStatus.CONFLICT),
+    OPTION_DETAIL_NOT_FOUND(404055, "Option detail not found", HttpStatus.NOT_FOUND)
     ;
-    Integer code;
-    String message;
-    HttpStatus status;
+    
+    private final int code;
+    private final String message;
+    private final HttpStatus status;
+
+    ErrorCode(int code, String message, HttpStatus status) {
+        this.code = code;
+        this.message = message;
+        this.status = status;
+    }
 }

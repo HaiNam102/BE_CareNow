@@ -67,7 +67,7 @@ public class Booking {
     @JoinColumn(name = "care_recipient_id")
     CareRecipient careRecipient;
 
-    @OneToOne(mappedBy = "booking")
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     Payment payment;
     
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)

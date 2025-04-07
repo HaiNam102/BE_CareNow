@@ -4,20 +4,12 @@ import com.example.Cap2.NannyNow.DTO.Request.BookingReq;
 import com.example.Cap2.NannyNow.DTO.Response.BookedTimeSlotRes;
 import com.example.Cap2.NannyNow.DTO.Response.BookingDTO;
 import com.example.Cap2.NannyNow.DTO.Response.BookingRes;
-import com.example.Cap2.NannyNow.Entity.Booking;
-import com.example.Cap2.NannyNow.Entity.BookingDay;
-import com.example.Cap2.NannyNow.Entity.CareTaker;
-import com.example.Cap2.NannyNow.Entity.Customer;
-import com.example.Cap2.NannyNow.Entity.CareRecipient;
+import com.example.Cap2.NannyNow.Entity.*;
 import com.example.Cap2.NannyNow.Enum.EStatus;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Mapper.BookingMapper;
-import com.example.Cap2.NannyNow.Repository.BookingDayRepository;
-import com.example.Cap2.NannyNow.Repository.BookingRepository;
-import com.example.Cap2.NannyNow.Repository.CareRecipientRepository;
-import com.example.Cap2.NannyNow.Repository.CareTakerRepository;
-import com.example.Cap2.NannyNow.Repository.CustomerRepository;
+import com.example.Cap2.NannyNow.Repository.*;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -41,6 +33,7 @@ public class BookingService {
     CustomerRepository customerRepository;
     CareTakerService careTakerService;
     CareRecipientRepository careRecipientRepository;
+    PaymentRepository paymentRepository;
 
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime, LocalTime requestedEndTime) {
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
@@ -76,18 +69,23 @@ public class BookingService {
         return isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime);
     }
 
-    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime, LocalTime requestedEndTime) {
+    private boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime startTime, LocalTime endTime) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime bookingStart = LocalDateTime.of(days.get(0), startTime);
+        
+        // Kiểm tra thời gian đặt phải cách thời gian hiện tại ít nhất 1 tiếng
+        if (bookingStart.isBefore(now.plusHours(1))) {
+            throw new ApiException(ErrorCode.BOOKING_TIME_TOO_CLOSE);
+        }
+        
+        // Kiểm tra xem có booking nào trùng thời gian không
         for (LocalDate day : days) {
-            if (!isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime)) {
-                return false;
+            if (bookingRepository.existsOverlappingBooking(careTakerId, day, startTime, endTime)) {
+                throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
             }
         }
+        
         return true;
-    }
-
-    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime) {
-        LocalTime requestedEndTime = requestedStartTime.plusHours(1);
-        return areAllDaysValid(careTakerId, days, requestedStartTime, requestedEndTime);
     }
 
     @Transactional
@@ -98,19 +96,16 @@ public class BookingService {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
-        // Kiểm tra và lấy thông tin người được chăm sóc (CareRecipient)
         CareRecipient careRecipient = null;
         if (bookingReq.getCareRecipientId() != null) {
             careRecipient = careRecipientRepository.findById(bookingReq.getCareRecipientId())
                     .orElseThrow(() -> new ApiException(ErrorCode.CARE_RECIPIENT_NOT_FOUND));
-            
-            // Kiểm tra xem người được chăm sóc có thuộc về khách hàng này không
+
             if (!careRecipient.getCustomer().getCustomer_id().equals(customerId)) {
                 throw new ApiException(ErrorCode.CARE_RECIPIENT_NOT_BELONG_TO_CUSTOMER);
             }
         }
 
-        // Kiểm tra xem thời gian định đặt có hợp lệ không (không trùng với booking nào đã tồn tại)
         if (!areAllDaysValid(careTakerId, bookingReq.getDays(), bookingReq.getTimeToStart(), bookingReq.getTimeToEnd())) {
             throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
         }
@@ -122,7 +117,13 @@ public class BookingService {
         booking.setBookingDays(new ArrayList<>());
         booking.setCreatedAt(LocalDate.from(LocalDateTime.now()));
         booking.setServiceProgress(EStatus.PENDING);
-        booking = bookingRepository.save(booking);
+
+        Payment payment = new Payment();
+        payment.setStatus(false);
+        payment.setPrice(bookingReq.getPrice());
+        payment.setBooking(booking);
+        payment.setCreateAt(LocalDateTime.now());
+        booking.setPayment(payment);
 
         for (LocalDate day : bookingReq.getDays()) {
             BookingDay bookingDay = new BookingDay();
@@ -132,6 +133,7 @@ public class BookingService {
         }
 
         return bookingRepository.save(booking);
+
     }
 
     public BookingDTO convertToBookingDTO(Booking booking) {

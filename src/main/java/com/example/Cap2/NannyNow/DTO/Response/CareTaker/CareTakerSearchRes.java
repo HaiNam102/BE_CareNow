@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CareTakerSearchRes {
-    Long care_taker_id;
+    Long careTakerId;
     String nameOfCareTaker;
     int experienceYear;
     String imgProfile;

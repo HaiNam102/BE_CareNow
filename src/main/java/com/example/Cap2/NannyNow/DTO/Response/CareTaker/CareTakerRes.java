@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CareTakerRes {
-    Long care_taker_id;
+    Long careTakerId;
     String nameOfCareTaker;
     int experienceYear;
     String servicePrice;
