@@ -129,7 +129,7 @@ create table payment(
 	payment_id bigint auto_increment not null primary key,
     booking_id bigint,
 	status boolean,
-    price varchar(255),
+    price FLOAT,
     transaction_id varchar(255),
     create_at datetime,
     update_at datetime

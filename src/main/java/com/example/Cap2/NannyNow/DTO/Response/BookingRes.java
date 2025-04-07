@@ -17,6 +17,7 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingRes {
+    Long bookingId;
     String careTakerName;
     String customerName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

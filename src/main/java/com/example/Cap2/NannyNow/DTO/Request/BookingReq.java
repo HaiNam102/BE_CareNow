@@ -27,4 +27,5 @@ public class BookingReq {
     LocalTime timeToEnd;
     String jobDescription;
     Long careRecipientId;
+    float price;
 }
