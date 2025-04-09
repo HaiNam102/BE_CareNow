@@ -33,7 +33,6 @@ public class BookingService {
     CustomerRepository customerRepository;
     CareTakerService careTakerService;
     CareRecipientRepository careRecipientRepository;
-    PaymentRepository paymentRepository;
 
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime, LocalTime requestedEndTime) {
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
@@ -171,10 +170,10 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    public BookingDTO getBookingById(Long id) {
+    public BookingRes getBookingById(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        return convertToBookingDTO(booking);
+        return bookingMapper.toBookingRes(booking);
     }
 
     public List<BookingDTO> getBookingsByCustomerId(Long customerId) {
