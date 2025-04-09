@@ -16,11 +16,12 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(Long accountId, Long customerId, String role) {
+    public String generateToken(Long accountId, Long customerId, String role,String userName) {
         return Jwts.builder()
                 .setSubject(accountId.toString()) // Đặt subject là accountId
                 .claim("role", role)
                 .claim("user_id", customerId)
+                .claim("username", userName)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Thời gian hết hạn
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256) // Ký token

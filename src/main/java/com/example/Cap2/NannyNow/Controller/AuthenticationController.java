@@ -60,21 +60,24 @@ public class AuthenticationController {
 
         String roleName = roles.get(0).getRole().getRoleName();
         Long userId = null;
-
+        String userName ="";
         switch (roleName.toUpperCase()) {
             case "CUSTOMER":
                 if (account.getCustomer() != null) {
                     userId = account.getCustomer().getCustomer_id();
+                    userName = account.getCustomer().getNameOfCustomer();
                 }
                 break;
             case "CARE_TAKER":
                 if (account.getCareTaker() != null) {
                     userId = account.getCareTaker().getCare_taker_id();
+                    userName = account.getCareTaker().getNameOfCareTaker();
                 }
                 break;
             case "ADMIN":
                 if (account.getAdmin() != null) {
                     userId = account.getAdmin().getAdminId();
+                    userName = account.getAdmin().getNameOfAdmin();
                 }
                 break;
             default:
@@ -85,7 +88,7 @@ public class AuthenticationController {
             throw new ApiException(ErrorCode.USER_NOT_FOUND);
         }
 
-        String token = jwtUtil.generateToken(account.getAccountId(), userId, roleName);
+        String token = jwtUtil.generateToken(account.getAccountId(), userId, roleName,userName);
         AuthenticationResponse authResponse = AuthenticationResponse.builder()
             .jwt(token)
             .userId(userId)
