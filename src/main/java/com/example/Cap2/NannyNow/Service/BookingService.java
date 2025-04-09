@@ -38,25 +38,30 @@ public class BookingService {
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime, LocalTime requestedEndTime) {
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
         
-        // Kiểm tra xem thời gian định đặt có trùng với booking nào đã tồn tại không
+        // Kiểm tra xem thời gian định đặt có trùng hoặc quá gần với booking nào đã tồn tại không
         for (Booking booking : bookings) {
             LocalTime existingStartTime = booking.getTimeToStart();
             LocalTime existingEndTime = booking.getTimeToEnd();
             
-            // Trường hợp 1: Thời gian bắt đầu của booking mới nằm trong khoảng thời gian của booking đã tồn tại
-            // requestedStartTime >= existingStartTime và requestedStartTime < existingEndTime
-            boolean startTimeOverlap = !requestedStartTime.isBefore(existingStartTime) && requestedStartTime.isBefore(existingEndTime);
+            // Kiểm tra trường hợp trùng thời gian
+            boolean isTimeOverlap = (!requestedStartTime.isBefore(existingStartTime) && requestedStartTime.isBefore(existingEndTime)) ||
+                                  (requestedEndTime.isAfter(existingStartTime) && !requestedEndTime.isAfter(existingEndTime)) ||
+                                  (!requestedStartTime.isAfter(existingStartTime) && !requestedEndTime.isBefore(existingEndTime));
             
-            // Trường hợp 2: Thời gian kết thúc của booking mới nằm trong khoảng thời gian của booking đã tồn tại
-            // requestedEndTime > existingStartTime và requestedEndTime <= existingEndTime
-            boolean endTimeOverlap = requestedEndTime.isAfter(existingStartTime) && !requestedEndTime.isAfter(existingEndTime);
+            if (isTimeOverlap) {
+                throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
+            }
             
-            // Trường hợp 3: Booking mới bao trùm booking đã tồn tại
-            // requestedStartTime <= existingStartTime và requestedEndTime >= existingEndTime
-            boolean bookingCoversExisting = !requestedStartTime.isAfter(existingStartTime) && !requestedEndTime.isBefore(existingEndTime);
+            // Kiểm tra trường hợp không cách 1 tiếng
+            boolean isTooClose = (!requestedStartTime.isBefore(existingStartTime.minusHours(1)) && 
+                                !requestedStartTime.isAfter(existingEndTime.plusHours(1))) ||
+                               (!requestedEndTime.isBefore(existingStartTime.minusHours(1)) && 
+                                !requestedEndTime.isAfter(existingEndTime.plusHours(1))) ||
+                               (!requestedStartTime.isAfter(existingStartTime.minusHours(1)) && 
+                                !requestedEndTime.isBefore(existingEndTime.plusHours(1)));
             
-            if (startTimeOverlap || endTimeOverlap || bookingCoversExisting) {
-                return false;
+            if (isTooClose) {
+                throw new ApiException(ErrorCode.BOOKING_TIME_TOO_CLOSE);
             }
         }
         
@@ -69,23 +74,18 @@ public class BookingService {
         return isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime);
     }
 
-    private boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime startTime, LocalTime endTime) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime bookingStart = LocalDateTime.of(days.get(0), startTime);
-        
-        // Kiểm tra thời gian đặt phải cách thời gian hiện tại ít nhất 1 tiếng
-        if (bookingStart.isBefore(now.plusHours(1))) {
-            throw new ApiException(ErrorCode.BOOKING_TIME_TOO_CLOSE);
-        }
-        
-        // Kiểm tra xem có booking nào trùng thời gian không
+    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime, LocalTime requestedEndTime) {
         for (LocalDate day : days) {
-            if (bookingRepository.existsOverlappingBooking(careTakerId, day, startTime, endTime)) {
-                throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
+            if (!isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime)) {
+                return false;
             }
         }
-        
         return true;
+    }
+
+    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime) {
+        LocalTime requestedEndTime = requestedStartTime.plusHours(1);
+        return areAllDaysValid(careTakerId, days, requestedStartTime, requestedEndTime);
     }
 
     @Transactional
@@ -109,6 +109,7 @@ public class BookingService {
         if (!areAllDaysValid(careTakerId, bookingReq.getDays(), bookingReq.getTimeToStart(), bookingReq.getTimeToEnd())) {
             throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
         }
+
 
         Booking booking = bookingMapper.toBooking(bookingReq);
         booking.setCustomer(customer);
