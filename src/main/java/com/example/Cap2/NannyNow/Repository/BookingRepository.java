@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -29,16 +28,4 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
 
     @Query("SELECT b FROM Booking b WHERE b.care_taker.care_taker_id = :careTakerId ORDER BY b.bookingId DESC")
     List<Booking> findByCareTakerId(@Param("careTakerId") Long careTakerId);
-
-    @Query("SELECT COUNT(b) > 0 FROM Booking b " +
-           "JOIN b.bookingDays bd " +
-           "WHERE b.care_taker.care_taker_id = :careTakerId " +
-           "AND bd.day = :day " +
-           "AND ((:startTime BETWEEN b.timeToStart AND b.timeToEnd) " +
-           "OR (:endTime BETWEEN b.timeToStart AND b.timeToEnd) " +
-           "OR (b.timeToStart BETWEEN :startTime AND :endTime))")
-    boolean existsOverlappingBooking(@Param("careTakerId") Long careTakerId,
-                                   @Param("day") LocalDate day,
-                                   @Param("startTime") LocalTime startTime,
-                                   @Param("endTime") LocalTime endTime);
 }

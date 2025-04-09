@@ -20,7 +20,7 @@ public enum ErrorCode {
     BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
             "Please select a time that is at least 1 hour after the care taker has been off.", HttpStatus.CONFLICT),
     BOOKING_TIME_CONFLICT(40903, "Thời gian này đã có người đặt. Vui lòng chọn thời gian khác.", HttpStatus.CONFLICT),
-    BOOKING_TIME_TOO_CLOSE(40904, "Thời gian đặt lịch phải cách thời gian hiện tại ít nhất 1 tiếng", HttpStatus.CONFLICT),
+    BOOKING_TIME_TOO_CLOSE(40904, "Thời gian đặt lịch phải cách các lịch khác ít nhất 1 tiếng", HttpStatus.CONFLICT),
     OPTION_DETAIL_NOT_FOUND(404055, "Option detail not found", HttpStatus.NOT_FOUND)
     ;
     
