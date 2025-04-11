@@ -33,6 +33,7 @@ public interface BookingMapper {
     @Mapping(source = "serviceProgress", target = "serviceProgress")
     @Mapping(source = "careRecipient.careRecipientId", target = "careRecipientId")
     @Mapping(source = "careRecipient.name", target = "careRecipientName")
+    @Mapping(source = "payment.status",target = "status")
     BookingRes toBookingRes(Booking booking);
 
     @Named("mapBookingDaysToLocalDate")

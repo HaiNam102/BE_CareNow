@@ -101,43 +101,21 @@ public class BookingController {
     }
 
     /**
-     * API lấy danh sách các time slot đã đặt của một careTaker trong một ngày cụ thể
+     * API lấy danh sách các time slot đã đặt của một careTaker cho một danh sách ngày
      * 
      * @param careTakerId ID của careTaker cần kiểm tra
-     * @param day ngày cần kiểm tra
+     * @param days danh sách ngày cần kiểm tra
      * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
      */
     @GetMapping("/booked-slots/caretaker/{careTakerId}")
     public ResponseEntity<?> getBookedTimeSlots(
             @PathVariable Long careTakerId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> days) {
         
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(bookingService.getBookedTimeSlots(careTakerId, day))
-                .build()
-        );
-    }
-    
-    /**
-     * API lấy danh sách các time slot đã đặt của một careTaker trong một khoảng ngày
-     * 
-     * @param careTakerId ID của careTaker cần kiểm tra
-     * @param startDay ngày bắt đầu
-     * @param endDay ngày kết thúc
-     * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
-     */
-    @GetMapping("/booked-slots/caretaker/{careTakerId}/range")
-    public ResponseEntity<?> getBookedTimeSlotsInRange(
-            @PathVariable Long careTakerId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDay,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDay) {
-        
-        return ResponseEntity.ok(ApiResponse.builder()
-                .code(SuccessCode.GET_SUCCESSFUL.getCode())
-                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(bookingService.getBookedTimeSlotsInRange(careTakerId, startDay, endDay))
+                .data(bookingService.getBookedTimeSlotsForDays(careTakerId, days))
                 .build()
         );
     }

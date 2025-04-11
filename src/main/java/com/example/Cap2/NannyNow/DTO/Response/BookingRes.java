@@ -35,4 +35,5 @@ public class BookingRes {
     EStatus serviceProgress;
     Long careRecipientId;
     String careRecipientName;
+    Boolean status;
 }

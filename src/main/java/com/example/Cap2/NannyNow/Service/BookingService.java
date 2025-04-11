@@ -64,8 +64,8 @@ public class BookingService {
             }
         }
         
-        return true;
-    }
+            return true;
+        }
 
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime) {
         // Mặc định thời gian kết thúc là 1 giờ sau thời gian bắt đầu
@@ -233,6 +233,22 @@ public class BookingService {
         while (!currentDay.isAfter(endDay)) {
             result.addAll(getBookedTimeSlots(careTakerId, currentDay));
             currentDay = currentDay.plusDays(1);
+        }
+        
+        return result;
+    }
+
+    /**
+     * Lấy danh sách các time slot đã đặt của một careTaker trong một danh sách ngày
+     * @param careTakerId ID của careTaker cần kiểm tra
+     * @param days danh sách ngày cần kiểm tra
+     * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
+     */
+    public List<BookedTimeSlotRes> getBookedTimeSlotsForDays(Long careTakerId, List<LocalDate> days) {
+        List<BookedTimeSlotRes> result = new ArrayList<>();
+        
+        for (LocalDate day : days) {
+            result.addAll(getBookedTimeSlots(careTakerId, day));
         }
         
         return result;
