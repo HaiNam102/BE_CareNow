@@ -87,9 +87,8 @@ create table care_taker_feedback(
 CREATE TABLE calendar (
     calendar_id bigint auto_increment not null primary key,
     day DATE NOT NULL,
-    time_to_start TIME NOT NULL,
-    time_to_end TIME NOT NULL,
-    CHECK (time_to_start < time_to_end),
+    time_to_start TIME,
+    time_to_end TIME,
     care_taker_id bigint
 );
 
