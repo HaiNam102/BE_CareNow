@@ -29,7 +29,7 @@ public class BookingRes {
     String placeName;
     String bookingAddress;
     String descriptionPlace;
-    String servicePrice;
+    float servicePrice;
     ELocationType locationType;
     String jobDescription;
     EStatus serviceProgress;

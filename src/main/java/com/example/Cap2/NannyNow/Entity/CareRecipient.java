@@ -1,5 +1,6 @@
 package com.example.Cap2.NannyNow.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -32,5 +33,6 @@ public class CareRecipient {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
+    @JsonIgnore
     Customer customer;
 }
