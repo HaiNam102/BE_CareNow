@@ -47,6 +47,7 @@ public class CustomerService {
 
         Customer updatedCustomer = customerMapper.toCustomer(customerReq);
         updatedCustomer.setCustomer_id(existingCustomer.getCustomer_id());
+        updatedCustomer.setAccount(existingCustomer.getAccount());
         Customer savedCustomer = customerRepository.save(updatedCustomer);
         return customerMapper.toCustomerReq(savedCustomer);
     }

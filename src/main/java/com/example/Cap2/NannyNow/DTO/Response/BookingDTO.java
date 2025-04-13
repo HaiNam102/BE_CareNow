@@ -25,4 +25,5 @@ public class BookingDTO {
     int toltalReviewers;
     Long careRecipientId;
     String careRecipientName;
+    float servicePrice;
 } 

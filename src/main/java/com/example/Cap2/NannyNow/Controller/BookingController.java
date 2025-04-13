@@ -119,4 +119,20 @@ public class BookingController {
                 .build()
         );
     }
+
+    /**
+     * API lấy thông tin care recipient theo booking ID
+     * 
+     * @param bookingId ID của booking cần lấy thông tin
+     * @return thông tin của care recipient của booking đó
+     */
+    @GetMapping("/{bookingId}/care-recipient")
+    public ResponseEntity<?> getCareRecipientByBookingId(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(bookingService.getCareRecipientByBookingId(bookingId))
+                .build()
+        );
+    }
 }

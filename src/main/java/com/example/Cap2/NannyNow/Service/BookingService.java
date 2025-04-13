@@ -148,6 +148,7 @@ public class BookingService {
         careTakerService.updateAverageRating(booking.getCare_taker());
         bookingDTO.setRating(booking.getCare_taker().getAvarageRating());
         bookingDTO.setToltalReviewers(careTakerService.getTotalReviewers(booking.getCare_taker().getCare_taker_id()));
+        bookingDTO.setServicePrice(booking.getPayment().getPrice());
         
         if (booking.getCare_taker() != null) {
             bookingDTO.setCareTakerName(booking.getCare_taker().getNameOfCareTaker());
@@ -252,5 +253,16 @@ public class BookingService {
         }
         
         return result;
+    }
+
+    public CareRecipient getCareRecipientByBookingId(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.BOOKING_NOT_FOUND));
+        
+        if (booking.getCareRecipient() == null) {
+            throw new ApiException(ErrorCode.CARE_RECIPIENT_NOT_FOUND);
+        }
+        
+        return booking.getCareRecipient();
     }
 }
