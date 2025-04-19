@@ -1,5 +1,6 @@
 package com.example.Cap2.NannyNow.Mapper;
 
+import com.example.Cap2.NannyNow.DTO.Request.CalendarReq;
 import com.example.Cap2.NannyNow.DTO.Response.CalendarRes;
 import com.example.Cap2.NannyNow.Entity.Calendar;
 import org.mapstruct.Mapper;
@@ -13,4 +14,5 @@ public interface CalendarMapper {
     @Mapping(source = "care_taker.care_taker_id", target = "careTakerId")
     @Mapping(source = "care_taker.nameOfCareTaker", target = "careTakerName")
     CalendarRes toCalendarRes(Calendar calendar);
+
 } 
