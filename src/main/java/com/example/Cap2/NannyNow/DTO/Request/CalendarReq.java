@@ -1,25 +1,18 @@
-package com.example.Cap2.NannyNow.DTO.Response;
+package com.example.Cap2.NannyNow.DTO.Request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class CalendarRes {
-    Long calendarId;
-    
+public class CalendarReq {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    LocalDate day;
-    
-    Long careTakerId;
-    String careTakerName;
-} 
+    List<LocalDate> day;
+}
