@@ -10,7 +10,8 @@ import lombok.experimental.FieldDefaults;
 public enum EStatus {
     PENDING("dang cho"),
     ACCEPT("chap nhan"),
-    REJECT("tu choi");
+    REJECT("tu choi"),
+    COMPLETED("hoan thanh");
 
     String status;
 }
