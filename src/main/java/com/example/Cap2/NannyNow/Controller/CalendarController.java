@@ -59,4 +59,14 @@ public class CalendarController {
                 .build()
         );
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCalendar(@PathVariable Long id) {
+        calendarService.deleteCalendar(id);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.DELETE_SUCCESSFUL.getCode())
+                .message(SuccessCode.DELETE_SUCCESSFUL.getMessage())
+                .build()
+        );
+    }
 } 

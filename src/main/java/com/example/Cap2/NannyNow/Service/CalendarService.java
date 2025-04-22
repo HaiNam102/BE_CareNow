@@ -12,6 +12,7 @@ import com.example.Cap2.NannyNow.Repository.CareTakerRepository;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -58,5 +59,11 @@ public class CalendarService {
             calendarRes.add(calendarRes1);
         }
         return calendarRes;
+    }
+
+    @Transactional
+    public void deleteCalendar(Long id){
+        Calendar calendar = calendarRepository.findById(id).orElseThrow(()->new ApiException(ErrorCode.CALENDAR_NOT_FOUND));
+        calendarRepository.deleteById(id);
     }
 } 
