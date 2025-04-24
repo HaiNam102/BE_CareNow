@@ -5,12 +5,15 @@ import com.example.Cap2.NannyNow.DTO.Response.CareTaker.CareTakerRes;
 import com.example.Cap2.NannyNow.DTO.Response.CareTaker.CareTakerSearchRes;
 import com.example.Cap2.NannyNow.Entity.CareTaker;
 import com.example.Cap2.NannyNow.Entity.CareTakerFeedback;
+import com.example.Cap2.NannyNow.Entity.OptionDetailsOfCareTaker;
+import com.example.Cap2.NannyNow.Entity.OptionsDetails;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Mapper.CareTakerMapper;
 import com.example.Cap2.NannyNow.Repository.BookingRepository;
 import com.example.Cap2.NannyNow.Repository.CareTakerFeedBackRepository;
 import com.example.Cap2.NannyNow.Repository.CareTakerRepository;
+import com.example.Cap2.NannyNow.Repository.OptionDetailsOfCareTakerRepository;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ public class CareTakerService {
     CareTakerRepository careTakerRepository;
     CareTakerFeedBackRepository careTakerFeedBackRepository;
     BookingRepository bookingRepository;
+    OptionDetailsOfCareTakerRepository optionDetailsOfCareTakerRepository;
 
     public List<CareTakerRes> getAllCareTaker(){
         List<CareTaker> careTakers = careTakerRepository.findAll();
@@ -68,7 +72,8 @@ public class CareTakerService {
             
             careTakerSearchRes.setTotalReviewers(getTotalReviewers(careTaker.getCare_taker_id()));
             careTakerSearchRes.setTotalBookings(getCareTakerBookingsCount(careTaker.getCare_taker_id()));
-            
+            careTakerSearchRes.setOptionDetailsOfCareTakers(getOptionDetailsOfCareTakers(careTaker.getCare_taker_id()));
+
             careTakerSearchResList.add(careTakerSearchRes);
         }
         
@@ -82,6 +87,11 @@ public class CareTakerService {
     
     public int getCareTakerBookingsCount(Long careTakerId) {
         return bookingRepository.countBookingsByCareTakerId(careTakerId);
+    }
+
+    public List<OptionsDetails> getOptionDetailsOfCareTakers(Long careTakerId){
+        List<OptionsDetails> optionDetailsOfCareTakerList = optionDetailsOfCareTakerRepository.findOptionDetailsIdByCareTakerId(careTakerId);
+        return optionDetailsOfCareTakerList;
     }
 
     public void updateAverageRating(CareTaker careTaker) {

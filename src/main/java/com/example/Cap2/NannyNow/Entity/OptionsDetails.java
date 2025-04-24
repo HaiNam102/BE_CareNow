@@ -28,6 +28,7 @@ public class OptionsDetails {
     Options options;
 
     @OneToMany(mappedBy = "optionsDetails")
+    @JsonIgnore
     List<OptionDetailsOfCareTaker> optionDetailsOfCareTaker;
 
 }

@@ -1,6 +1,7 @@
 package com.example.Cap2.NannyNow.Mapper;
 
 import com.example.Cap2.NannyNow.DTO.Request.BookingReq;
+import com.example.Cap2.NannyNow.DTO.Response.BookingDTO;
 import com.example.Cap2.NannyNow.DTO.Response.BookingRes;
 import com.example.Cap2.NannyNow.Entity.Booking;
 import com.example.Cap2.NannyNow.Entity.BookingDay;
@@ -35,6 +36,9 @@ public interface BookingMapper {
     @Mapping(source = "careRecipient.name", target = "careRecipientName")
     @Mapping(source = "payment.status",target = "status")
     BookingRes toBookingRes(Booking booking);
+
+    @Mapping(source = "care_taker.image.imgProfile" ,target = "imgProfile")
+    BookingDTO toBookingDTO(Booking boooking);
 
     @Named("mapBookingDaysToLocalDate")
     default List<LocalDate> mapBookingDaysToLocalDate(List<BookingDay> bookingDays) {
