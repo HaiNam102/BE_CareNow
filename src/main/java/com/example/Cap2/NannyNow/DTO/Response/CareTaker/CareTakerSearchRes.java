@@ -1,8 +1,13 @@
 package com.example.Cap2.NannyNow.DTO.Response.CareTaker;
 
+import com.example.Cap2.NannyNow.Entity.OptionDetailsOfCareTaker;
+import com.example.Cap2.NannyNow.Entity.OptionsDetails;
+import com.example.Cap2.NannyNow.Enum.EGender;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,4 +26,6 @@ public class CareTakerSearchRes {
     int totalReviewers;
     int totalBookings;
     String servicePrice;
+    String gender;
+    List<OptionsDetails> optionDetailsOfCareTakers;
 }

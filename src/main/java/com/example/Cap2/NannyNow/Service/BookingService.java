@@ -149,6 +149,7 @@ public class BookingService {
         bookingDTO.setRating(booking.getCare_taker().getAvarageRating());
         bookingDTO.setToltalReviewers(careTakerService.getTotalReviewers(booking.getCare_taker().getCare_taker_id()));
         bookingDTO.setServicePrice(booking.getPayment().getPrice());
+        bookingDTO.setImgProfile(booking.getCare_taker().getImage().getImgProfile());
         
         if (booking.getCare_taker() != null) {
             bookingDTO.setCareTakerName(booking.getCare_taker().getNameOfCareTaker());

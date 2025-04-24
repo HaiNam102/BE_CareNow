@@ -21,6 +21,7 @@ public interface CareTakerMapper {
 
     @Mapping(source = "avarageRating", target = "rating")
     @Mapping(source = "care_taker_id",target = "careTakerId")
+    @Mapping(source = "gender",target = "gender")
     CareTakerSearchRes toCareTakerSearchRes(CareTaker careTaker);
 
     CareTaker CareTakerReqtoCareTaker(CareTakerReq careTakerReq);
