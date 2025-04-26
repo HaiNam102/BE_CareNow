@@ -45,6 +45,16 @@ public class CareTakerController {
         );
     }
 
+    @GetMapping("/getCareTakerId/{id}")
+    public ResponseEntity<?> getCareTakerById1(@PathVariable("id") Long careTakerId){
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(careTakerService.getCareTakerById(careTakerId))
+                .build()
+        );
+    }
+
     @GetMapping("/search")
     public  ResponseEntity<?> getCareTakerByDayAndArea(@RequestParam("district") String district,
                                                        @RequestParam("dayStart") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dayStart,
