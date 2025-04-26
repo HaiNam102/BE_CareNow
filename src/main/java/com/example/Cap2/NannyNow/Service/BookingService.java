@@ -43,21 +43,15 @@ public class BookingService {
             LocalTime existingEndTime = booking.getTimeToEnd();
             
             // Kiểm tra trường hợp trùng thời gian
-            boolean isTimeOverlap = (!requestedStartTime.isBefore(existingStartTime) && requestedStartTime.isBefore(existingEndTime)) ||
-                                  (requestedEndTime.isAfter(existingStartTime) && !requestedEndTime.isAfter(existingEndTime)) ||
-                                  (!requestedStartTime.isAfter(existingStartTime) && !requestedEndTime.isBefore(existingEndTime));
-            
+            boolean isTimeOverlap = requestedStartTime.isBefore(existingEndTime) && requestedEndTime.isAfter(existingStartTime);
+
             if (isTimeOverlap) {
                 throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
             }
             
             // Kiểm tra trường hợp không cách 1 tiếng
-            boolean isTooClose = (!requestedStartTime.isBefore(existingStartTime.minusHours(1)) && 
-                                !requestedStartTime.isAfter(existingEndTime.plusHours(1))) ||
-                               (!requestedEndTime.isBefore(existingStartTime.minusHours(1)) && 
-                                !requestedEndTime.isAfter(existingEndTime.plusHours(1))) ||
-                               (!requestedStartTime.isAfter(existingStartTime.minusHours(1)) && 
-                                !requestedEndTime.isBefore(existingEndTime.plusHours(1)));
+            boolean isTooClose = requestedStartTime.isBefore(existingEndTime.plusHours(1)) &&
+                    requestedEndTime.isAfter(existingStartTime.minusHours(1));
             
             if (isTooClose) {
                 throw new ApiException(ErrorCode.BOOKING_TIME_TOO_CLOSE);
