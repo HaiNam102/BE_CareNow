@@ -144,12 +144,12 @@ public class BookingService {
         bookingDTO.setToltalReviewers(careTakerService.getTotalReviewers(booking.getCare_taker().getCare_taker_id()));
         bookingDTO.setServicePrice(booking.getPayment().getPrice());
         bookingDTO.setImgProfile(booking.getCare_taker().getImage().getImgProfile());
-        
+        bookingDTO.setStatus(booking.getPayment().getStatus());
+
         if (booking.getCare_taker() != null) {
             bookingDTO.setCareTakerName(booking.getCare_taker().getNameOfCareTaker());
         }
-        
-        // Thêm thông tin về care recipient
+
         if (booking.getCareRecipient() != null) {
             bookingDTO.setCareRecipientId(booking.getCareRecipient().getCareRecipientId());
             bookingDTO.setCareRecipientName(booking.getCareRecipient().getName());

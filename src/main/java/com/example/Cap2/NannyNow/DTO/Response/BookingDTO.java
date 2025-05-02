@@ -27,4 +27,5 @@ public class BookingDTO {
     String careRecipientName;
     float servicePrice;
     String imgProfile;
+    Boolean status;
 } 

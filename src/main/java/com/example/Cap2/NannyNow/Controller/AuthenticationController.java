@@ -11,7 +11,6 @@ import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Service.AccountService;
 import com.example.Cap2.NannyNow.jwt.JwtUtil;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
