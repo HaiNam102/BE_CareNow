@@ -105,7 +105,6 @@ public class CareTakerService {
         careTakerRepository.save(careTaker);
     }
 
-
     public float calculateAverageRating(Long careTakerId) {
         List<CareTakerFeedback> feedbacks = careTakerFeedBackRepository.getAllFeedbackByCareTakerId(careTakerId);
         if (feedbacks == null || feedbacks.isEmpty()) {

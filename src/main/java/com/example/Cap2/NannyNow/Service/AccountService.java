@@ -2,6 +2,8 @@ package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Request.Author.RegisterDTO;
 import com.example.Cap2.NannyNow.DTO.Request.CareRecipientReq;
+import com.example.Cap2.NannyNow.DTO.Response.CccdResponse;
+import com.example.Cap2.NannyNow.DTO.Response.CccdWrapperResponse;
 import com.example.Cap2.NannyNow.Entity.*;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
@@ -11,6 +13,8 @@ import com.example.Cap2.NannyNow.Mapper.CareTakerMapper;
 import com.example.Cap2.NannyNow.Mapper.CustomerMapper;
 import com.example.Cap2.NannyNow.Repository.*;
 import com.example.Cap2.NannyNow.Service.Cloud.CloudinaryService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,18 +46,19 @@ public class AccountService {
     CustomerMapper customerMapper;
     CareTakerMapper careTakerMapper;
     CareRecipientMapper careRecipientMapper;
+    IDRecognitionService idRecognitionService;
 
-    public Account getAccountByUserName(String userName){
+    public Account getAccountByUserName(String userName) {
         return this.accountRepository.findByUserName(userName);
     }
 
     @Transactional
     public RegisterDTO register(RegisterDTO registerDTO, MultipartFile imgProfile, MultipartFile imgCccd) throws IOException {
         Role role = roleRepository.findByRoleName(registerDTO.getRoleName());
-        if(role == null ) {
+        if (role == null) {
             throw new ApiException(ErrorCode.INVALID_ROLE);
         }
-        if(accountRepository.existsByUsernameOrEmailOrPhoneNumber(registerDTO.getUserName(),registerDTO.getEmail(), registerDTO.getPhoneNumber())){
+        if (accountRepository.existsByUsernameOrEmailOrPhoneNumber(registerDTO.getUserName(), registerDTO.getEmail(), registerDTO.getPhoneNumber())) {
             throw new ApiException(ErrorCode.MAIL_PHONE_USERNAME_ALREADY_EXITS);
         }
         Account account = accountMapper.toAccount(registerDTO);
@@ -64,7 +70,7 @@ public class AccountService {
         account_role.setRole(role);
         account_RoleRepository.save(account_role);
 
-        if(role.getRoleName().equalsIgnoreCase("CUSTOMER")){
+        if (role.getRoleName().equalsIgnoreCase("CUSTOMER")) {
             Customer customer = customerMapper.toCustomer(registerDTO);
             customer.setAccount(account);
             customer = customerRepository.save(customer);
@@ -75,7 +81,7 @@ public class AccountService {
                 careRecipient.setCustomer(customer);
                 careRecipientRepository.save(careRecipient);
             }
-            
+
             if (registerDTO.getCareRecipients() != null && !registerDTO.getCareRecipients().isEmpty()) {
                 for (CareRecipientReq careRecipientReq : registerDTO.getCareRecipients()) {
                     CareRecipient careRecipient = careRecipientMapper.toCareRecipient(careRecipientReq);
@@ -84,7 +90,7 @@ public class AccountService {
                 }
             }
         }
-        if(role.getRoleName().equalsIgnoreCase("CARE_TAKER")){
+        if (role.getRoleName().equalsIgnoreCase("CARE_TAKER")) {
             CareTaker careTaker = careTakerMapper.toCareTaker(registerDTO);
             careTaker.setAccount(account);
             careTakerRepository.save(careTaker);
@@ -92,8 +98,8 @@ public class AccountService {
             List<Long> selectedOptionDetailIds = registerDTO.getSelectedOptionDetailIds();
             List<OptionDetailsOfCareTaker> optionDetailsOfCareTakers = new ArrayList<>();
 
-            for(Long optionDetailId : selectedOptionDetailIds){
-                OptionsDetails optionsDetails = optionsDetailsRepository.findById(optionDetailId).orElseThrow(()->new ApiException(ErrorCode.OPTION_DETAIL_NOT_FOUND));
+            for (Long optionDetailId : selectedOptionDetailIds) {
+                OptionsDetails optionsDetails = optionsDetailsRepository.findById(optionDetailId).orElseThrow(() -> new ApiException(ErrorCode.OPTION_DETAIL_NOT_FOUND));
                 OptionDetailsOfCareTaker optionDetailsOfCareTaker = new OptionDetailsOfCareTaker();
                 optionDetailsOfCareTaker.setCare_taker(careTaker);
                 optionDetailsOfCareTaker.setOptionsDetails(optionsDetails);
@@ -104,7 +110,35 @@ public class AccountService {
             Image image = new Image();
             try {
                 String imgProfilUrl = (imgProfile != null) ? cloudinaryService.uploadFile(imgProfile) : null;
-                String imgCccdUrl = (imgCccd != null) ? cloudinaryService.uploadFile(imgCccd) : null;
+                String imgCccdUrl = null;
+                if (imgCccd != null && !imgCccd.isEmpty()) {
+                    imgCccdUrl = cloudinaryService.uploadFile(imgCccd);
+                    // 2. Lưu file tạm để gửi FPT.AI
+                    File tempFile = File.createTempFile("cccd-", ".jpg");
+                    imgCccd.transferTo(tempFile); // chuyển MultipartFile -> File
+                    // 3. Gửi đến FPT.AI để kiểm tra CCCD
+                    String result = idRecognitionService.recognizeCCCD(tempFile);
+                    System.out.println(result);
+                    if (result == null || result.trim().isEmpty()) {
+                        throw new ApiException(ErrorCode.INVALID_CCCD);
+                    }
+                    // 4. Xử lý nếu cần validate dữ liệu CCCD
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        CccdWrapperResponse response = mapper.readValue(result, CccdWrapperResponse.class);
+                        if (response.getErrorCode() != 0 || response.getData().isEmpty()) {
+                            throw new ApiException(ErrorCode.INVALID_CCCD);
+                        }
+
+                        CccdResponse data = response.getData().get(0); // Lấy CCCD đầu tiên
+                        if (!data.getName().equalsIgnoreCase(registerDTO.getNameOfUser())) {
+                            throw new ApiException(ErrorCode.INVALID_CCCD);
+                        }
+                    } catch (JsonProcessingException e) {
+                        throw new ApiException(ErrorCode.INVALID_CCCD);
+                    }
+                    tempFile.delete();
+                }
                 image.setImgProfile(imgProfilUrl);
                 image.setImgCccd(imgCccdUrl);
                 image.setCare_taker(careTaker);

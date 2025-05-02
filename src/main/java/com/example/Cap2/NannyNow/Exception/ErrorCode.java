@@ -23,7 +23,8 @@ public enum ErrorCode {
     BOOKING_TIME_TOO_CLOSE(40904, "Thời gian đặt lịch phải cách các lịch khác ít nhất 1 tiếng", HttpStatus.CONFLICT),
     BOOKING_NOT_FOUND(40905, "Không tìm thấy booking", HttpStatus.NOT_FOUND),
     OPTION_DETAIL_NOT_FOUND(404055, "Option detail not found", HttpStatus.NOT_FOUND),
-    CALENDAR_NOT_FOUND(404056, "Calendar not found", HttpStatus.NOT_FOUND)
+    CALENDAR_NOT_FOUND(404056, "Calendar not found", HttpStatus.NOT_FOUND),
+    INVALID_CCCD(40408,"invalid CCCD",HttpStatus.NOT_FOUND)
     ;
     
     private final int code;

@@ -18,4 +18,5 @@ public class CareTakerFeedBackRes {
     LocalDate createdAt;
     int rating;
     String feedback;
+    Boolean status;
 }
