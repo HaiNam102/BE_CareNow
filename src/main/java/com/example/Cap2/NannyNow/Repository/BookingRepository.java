@@ -28,4 +28,17 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
 
     @Query("SELECT b FROM Booking b WHERE b.care_taker.care_taker_id = :careTakerId ORDER BY b.bookingId DESC")
     List<Booking> findByCareTakerId(@Param("careTakerId") Long careTakerId);
+
+    @Query("SELECT MONTH(b.createdAt), YEAR(b.createdAt), COUNT(b), SUM(b.payment.price) " +
+            "FROM Booking b GROUP BY YEAR(b.createdAt), MONTH(b.createdAt) " +
+            "ORDER BY YEAR(b.createdAt), MONTH(b.createdAt)")
+    List<Object[]> getMonthlyStats();
+
+    @Query("SELECT SUM(b.payment.price) FROM Booking b " +
+            "JOIN b.payment p " +
+            "WHERE b.care_taker.care_taker_id = :careTakerId " +
+            "AND MONTH(b.createdAt) = :month AND YEAR(b.createdAt) = :year AND p.status = true")
+    Double getMonthlyRevenueByNannyId(@Param("careTakerId") Long careTakerId,
+                                      @Param("month") int month,
+                                      @Param("year") int year);
 }

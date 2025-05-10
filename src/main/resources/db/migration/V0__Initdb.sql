@@ -48,7 +48,8 @@ create table role(
 create table account(
 	account_id bigint auto_increment not null primary key,
     user_name varchar(255),
-    password varchar(255)
+    password varchar(255),
+    active boolean default 1
 );
 
 create table account_role(

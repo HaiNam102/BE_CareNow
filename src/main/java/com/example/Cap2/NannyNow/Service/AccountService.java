@@ -2,6 +2,7 @@ package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Request.Author.RegisterDTO;
 import com.example.Cap2.NannyNow.DTO.Request.CareRecipientReq;
+import com.example.Cap2.NannyNow.DTO.Response.AccountRes;
 import com.example.Cap2.NannyNow.DTO.Response.CccdResponse;
 import com.example.Cap2.NannyNow.DTO.Response.CccdWrapperResponse;
 import com.example.Cap2.NannyNow.Entity.*;
@@ -148,5 +149,64 @@ public class AccountService {
             }
         }
         return registerDTO;
+    }
+
+    public List<AccountRes> getAllCustomerAccount() {
+        List<Account> accounts = accountRepository.findAll();
+        List<AccountRes> results = new ArrayList<>();
+
+        for (Account account : accounts) {
+            List<Account_Role> role = account.getAccountRoles();
+
+            if (role != null && !role.isEmpty()) {
+                String roleName = role.get(0).getRole().getRoleName();
+
+                if ("CUSTOMER".equalsIgnoreCase(roleName) && account.getCustomer() != null) {
+                    Customer customer = account.getCustomer();
+                    AccountRes user = new AccountRes(
+                            account.getAccountId(),
+                            customer.getCustomer_id(),
+                            customer.getNameOfCustomer(),
+                            customer.getEmail()
+                    );
+                    results.add(user);
+                }
+            }
+        }
+        return results;
+    }
+
+    public List<AccountRes> getAllCareAccount() {
+        List<Account> accounts = accountRepository.findAll();
+        List<AccountRes> results = new ArrayList<>();
+
+        for (Account account : accounts) {
+            List<Account_Role> role = account.getAccountRoles();
+
+            if (role != null && !role.isEmpty()) {
+                String roleName = role.get(0).getRole().getRoleName();
+
+                if ("CARE_TAKER".equalsIgnoreCase(roleName) && account.getCareTaker() != null) {
+                    CareTaker careTaker = account.getCareTaker();
+                    AccountRes user = new AccountRes(
+                            account.getAccountId(),
+                            careTaker.getCare_taker_id(),
+                            careTaker.getNameOfCareTaker(),
+                            careTaker.getEmail()
+                    );
+                    results.add(user);
+                }
+            }
+        }
+        return results;
+    }
+
+    public Account updateActive(Long accountId,Boolean status){
+        Account account = accountRepository.findById(accountId).orElseThrow(()->new ApiException(ErrorCode.ACCOUNT_NOT_FOUND));
+        if(account != null){
+            account.setActive(status);
+            accountRepository.save(account);
+        }
+        return account;
     }
 }

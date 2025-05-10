@@ -4,6 +4,7 @@ import com.example.Cap2.NannyNow.DTO.Request.BookingReq;
 import com.example.Cap2.NannyNow.DTO.Response.BookedTimeSlotRes;
 import com.example.Cap2.NannyNow.DTO.Response.BookingDTO;
 import com.example.Cap2.NannyNow.DTO.Response.BookingRes;
+import com.example.Cap2.NannyNow.DTO.Response.MonthlyStatsDTO;
 import com.example.Cap2.NannyNow.Entity.*;
 import com.example.Cap2.NannyNow.Enum.EStatus;
 import com.example.Cap2.NannyNow.Exception.ApiException;
@@ -257,7 +258,30 @@ public class BookingService {
         if (booking.getCareRecipient() == null) {
             throw new ApiException(ErrorCode.CARE_RECIPIENT_NOT_FOUND);
         }
-        
         return booking.getCareRecipient();
+    }
+
+    public List<MonthlyStatsDTO> getAllMonthlyStats() {
+        List<Object[]> results = bookingRepository.getMonthlyStats();
+        List<MonthlyStatsDTO> stats = new ArrayList<>();
+
+        for (Object[] row : results) {
+            int month = (int) row[0];
+            int year = (int) row[1];
+            long count = (Long) row[2];
+            double revenue = row[3] != null ? (Double) row[3] : 0.0;
+
+            stats.add(new MonthlyStatsDTO(month, year, count, revenue));
+        }
+        return stats;
+    }
+
+    public Double getCurrentMonthRevenueByCareTakerId(Long careTakerId) {
+        LocalDate now = LocalDate.now();
+        int month = now.getMonthValue();
+        int year = now.getYear();
+
+        Double revenue = bookingRepository.getMonthlyRevenueByNannyId(careTakerId, month, year);
+        return revenue != null ? revenue * 0.7 : 0.0;
     }
 }
