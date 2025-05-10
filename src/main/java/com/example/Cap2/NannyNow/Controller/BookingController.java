@@ -26,15 +26,16 @@ import java.util.List;
 public class BookingController {
     BookingService bookingService;
     JwtUtil jwtUtil;
+
     @PostMapping
     public ResponseEntity<?> createBooking(@RequestBody BookingReq bookingReq,
                                            @RequestParam Long careTakerId,
-                                           @RequestHeader("Authorization") String authHeader){
+                                           @RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         Long customer_id = jwtUtil.extractUserId(token);
         Booking booking = bookingService.createBooking(bookingReq, careTakerId, customer_id);
         BookingDTO bookingDTO = bookingService.convertToBookingDTO(booking);
-        
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.ADD_SUCCESSFUL.getCode())
                 .message(SuccessCode.ADD_SUCCESSFUL.getMessage())
@@ -42,7 +43,7 @@ public class BookingController {
                 .build()
         );
     }
-    
+
     @GetMapping
     public ResponseEntity<?> getAllBookings() {
         return ResponseEntity.ok(ApiResponse.builder()
@@ -52,7 +53,7 @@ public class BookingController {
                 .build()
         );
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookingById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.builder()
@@ -67,7 +68,7 @@ public class BookingController {
     public ResponseEntity<?> getCustomerBookings(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         Long customerId = jwtUtil.extractUserId(token);
-        
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
@@ -102,7 +103,7 @@ public class BookingController {
 
     /**
      * API lấy danh sách các time slot đã đặt của một careTaker cho một danh sách ngày
-     * 
+     *
      * @param careTakerId ID của careTaker cần kiểm tra
      * @param days danh sách ngày cần kiểm tra
      * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
@@ -111,7 +112,7 @@ public class BookingController {
     public ResponseEntity<?> getBookedTimeSlots(
             @PathVariable Long careTakerId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> days) {
-        
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
@@ -122,7 +123,7 @@ public class BookingController {
 
     /**
      * API lấy thông tin care recipient theo booking ID
-     * 
+     *
      * @param bookingId ID của booking cần lấy thông tin
      * @return thông tin của care recipient của booking đó
      */
@@ -132,6 +133,29 @@ public class BookingController {
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
                 .data(bookingService.getCareRecipientByBookingId(bookingId))
+                .build()
+        );
+    }
+
+    @GetMapping("/monthly")
+    public ResponseEntity<?> getMonthlyStats() {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(bookingService.getAllMonthlyStats())
+                .build()
+        );
+    }
+
+    @GetMapping("/price")
+    public ResponseEntity<?> getCurrentMonthRevenue( @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Long careTakerId = jwtUtil.extractUserId(token);
+
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(bookingService.getCurrentMonthRevenueByCareTakerId(careTakerId))
                 .build()
         );
     }

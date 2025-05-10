@@ -52,11 +52,13 @@ public class AuthenticationController {
         if (account == null) {
             throw new ApiException(ErrorCode.INVALID_ACCOUNT);
         }
+        if (!account.getActive()) {
+            throw new ApiException(ErrorCode.ACCOUNT_INACTIVE);
+        }
         List<Account_Role> roles = account.getAccountRoles();
         if (roles == null || roles.isEmpty()) {
             throw new ApiException(ErrorCode.INVALID_ROLE);
         }
-
         String roleName = roles.get(0).getRole().getRoleName();
         Long userId = null;
         String userName ="";
@@ -113,6 +115,36 @@ public class AuthenticationController {
                         .message(SuccessCode.REGISTER_SUCCESS.getMessage())
                         .data(accountService.register(registerDTO, imgProfile, imgCccd))
                         .build()
+        );
+    }
+
+    @GetMapping("/customer")
+    public ResponseEntity<?> getAllCustomerAccount(){
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(accountService.getAllCustomerAccount())
+                .build()
+        );
+    }
+
+    @GetMapping("/careTaker")
+    public ResponseEntity<?> getAllCareAccount(){
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(accountService.getAllCareAccount())
+                .build()
+        );
+    }
+
+    @PutMapping("/active/{accountId}")
+    public ResponseEntity<?> updateActive(@PathVariable Long accountId,@RequestParam Boolean status){
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(accountService.updateActive(accountId,status))
+                .build()
         );
     }
 }

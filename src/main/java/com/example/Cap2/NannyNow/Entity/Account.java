@@ -25,6 +25,9 @@ public class Account {
     @Column(name = "password")
     String password;
 
+    @Column(name = "active")
+    Boolean active;
+
     @OneToOne(mappedBy = "account")
     Customer customer;
 
