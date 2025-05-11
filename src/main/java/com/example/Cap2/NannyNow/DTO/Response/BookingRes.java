@@ -19,6 +19,8 @@ import java.util.List;
 public class BookingRes {
     Long bookingId;
     String careTakerName;
+    Long careTakerId;
+    String imgProfile;
     String customerName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     List<LocalDate> days;

@@ -26,8 +26,10 @@ public interface BookingMapper {
     @Mapping(target = "payment", ignore = true)
     @Mapping(source = "price", target = "payment.price")
     Booking toBooking(BookingReq bookingReq);
-    
+
     @Mapping(source = "care_taker.nameOfCareTaker", target = "careTakerName")
+    @Mapping(source = "care_taker.care_taker_id", target = "careTakerId")
+    @Mapping(source = "care_taker.image.imgProfile" ,target = "imgProfile")
     @Mapping(source = "customer.nameOfCustomer", target = "customerName")
     @Mapping(source = "bookingDays", target = "days", qualifiedByName = "mapBookingDaysToLocalDate")
     @Mapping(source = "payment.price", target = "servicePrice")
@@ -35,6 +37,7 @@ public interface BookingMapper {
     @Mapping(source = "careRecipient.careRecipientId", target = "careRecipientId")
     @Mapping(source = "careRecipient.name", target = "careRecipientName")
     @Mapping(source = "payment.status",target = "status")
+
     BookingRes toBookingRes(Booking booking);
 
     @Mapping(source = "care_taker.image.imgProfile" ,target = "imgProfile")
