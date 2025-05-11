@@ -6,6 +6,7 @@ import com.example.Cap2.NannyNow.DTO.Response.AccountRes;
 import com.example.Cap2.NannyNow.DTO.Response.CccdResponse;
 import com.example.Cap2.NannyNow.DTO.Response.CccdWrapperResponse;
 import com.example.Cap2.NannyNow.Entity.*;
+import com.example.Cap2.NannyNow.Enum.EGender;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Mapper.AccountMapper;
@@ -64,6 +65,7 @@ public class AccountService {
         }
         Account account = accountMapper.toAccount(registerDTO);
         account.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        account.setActive(true);
         accountRepository.save(account);
 
         Account_Role account_role = new Account_Role();
@@ -131,8 +133,15 @@ public class AccountService {
                             throw new ApiException(ErrorCode.INVALID_CCCD);
                         }
 
-                        CccdResponse data = response.getData().get(0); // Lấy CCCD đầu tiên
+                        CccdResponse data = response.getData().get(0);
+                        EGender genderFromCccd = EGender.fromVietnamese(data.getSex());
                         if (!data.getName().equalsIgnoreCase(registerDTO.getNameOfUser())) {
+                            throw new ApiException(ErrorCode.INVALID_CCCD);
+                        }
+                        if (!data.getDob().equalsIgnoreCase(String.valueOf(registerDTO.getDob()))) {
+                            throw new ApiException(ErrorCode.INVALID_CCCD);
+                        }
+                        if (!genderFromCccd.equals(registerDTO.getGender())) {
                             throw new ApiException(ErrorCode.INVALID_CCCD);
                         }
                     } catch (JsonProcessingException e) {

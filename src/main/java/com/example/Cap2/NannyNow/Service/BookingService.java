@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class BookingService {
     BookingRepository bookingRepository;
-    BookingDayRepository bookingDayRepository;
     BookingMapper bookingMapper;
     CareTakerRepository careTakerRepository;
     CustomerRepository customerRepository;
