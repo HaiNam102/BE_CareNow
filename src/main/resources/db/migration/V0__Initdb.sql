@@ -7,9 +7,8 @@ create table customer(
     name_of_customer nvarchar(255),
     email varchar(255),
     phone_number varchar(11),
-    city nvarchar(255),
-    address nvarchar(255),
---    img_profile nvarchar(255),
+    district nvarchar(255),
+    ward nvarchar(255),
     account_id bigint
 );
 
@@ -21,11 +20,12 @@ create table care_taker(
     introduce_yourself nvarchar(10000),
     dob date,
     gender varchar(255),
-    city nvarchar(255),
+    district nvarchar(255),
+    ward nvarchar(255),
     workable_area nvarchar(255),
     experience_year int,
     service_price varchar(255),
---    avarage_rating float,
+    avarage_rating float default 0,
     training_status boolean default false,
     account_id bigint
 );
@@ -48,7 +48,8 @@ create table role(
 create table account(
 	account_id bigint auto_increment not null primary key,
     user_name varchar(255),
-    password varchar(255)
+    password varchar(255),
+    active boolean default 1
 );
 
 create table account_role(
@@ -87,9 +88,8 @@ create table care_taker_feedback(
 CREATE TABLE calendar (
     calendar_id bigint auto_increment not null primary key,
     day DATE NOT NULL,
-    time_to_start TIME NOT NULL,
-    time_to_end TIME NOT NULL,
-    CHECK (time_to_start < time_to_end),
+    time_to_start TIME,
+    time_to_end TIME,
     care_taker_id bigint
 );
 
@@ -112,20 +112,24 @@ create table option_details(
 
 create table booking(
 	booking_id bigint auto_increment not null primary key,
+	place_name nvarchar(255),
     booking_address nvarchar(255),
-	day date not null,
+    description_place nvarchar(255),
     time_to_start time not null,
     time_to_end time not null,
-    service_progress nvarchar(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+    service_progress nvarchar(255) DEFAULT 'PENDING',
+    job_description nvarchar(1000),
     customer_id bigint,
-    care_taker_id bigint
+    care_taker_id bigint,
+    care_recipient_id bigint
 );
 
 create table payment(
 	payment_id bigint auto_increment not null primary key,
     booking_id bigint,
 	status boolean,
-    price varchar(255),
+    price FLOAT,
     transaction_id varchar(255),
     create_at datetime,
     update_at datetime
@@ -192,4 +196,5 @@ ADD CONSTRAINT fk_option_details_of_care_taker_care_taker FOREIGN KEY (care_take
 ALTER TABLE option_details
 ADD CONSTRAINT fk_option_details_options FOREIGN KEY (options_id) REFERENCES options(options_id) ON DELETE CASCADE;
 
-
+ALTER TABLE booking
+ADD CONSTRAINT fk_booking_care_recipient FOREIGN KEY (care_recipient_id) REFERENCES care_recipient(care_recipient_id) ON DELETE SET NULL;

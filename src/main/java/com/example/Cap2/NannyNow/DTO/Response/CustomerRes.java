@@ -1,5 +1,6 @@
 package com.example.Cap2.NannyNow.DTO.Response;
 
+import com.example.Cap2.NannyNow.Enum.EGender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,6 +13,7 @@ public class CustomerRes {
     String nameOfCustomer;
     String email;
     String phoneNumber;
-    String city;
-    String address;
+    EGender gender;
+    String district;
+    String ward;
 }

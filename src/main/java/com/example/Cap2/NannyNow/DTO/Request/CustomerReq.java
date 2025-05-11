@@ -12,6 +12,6 @@ public class CustomerReq {
     String nameOfCustomer;
     String email;
     String phoneNumber;
-    String city;
-    String address;
+    String district;
+    String ward;
 }

@@ -14,7 +14,6 @@ import java.time.LocalTime;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Calendar {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long calendarId;

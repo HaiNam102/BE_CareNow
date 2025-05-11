@@ -10,7 +10,16 @@ import java.util.List;
 
 @Repository
 public interface CareTakerFeedBackRepository extends JpaRepository<CareTakerFeedback,Long> {
-    @Query("SELECT cf FROM CareTakerFeedback cf WHERE cf.rating = :rating AND cf.care_taker.id = :careTakerId")
+    @Query("SELECT cf FROM CareTakerFeedback cf WHERE cf.rating = :rating AND cf.care_taker.care_taker_id = :careTakerId")
     public List<CareTakerFeedback> getFeedBackByRatingAndCareTaker(@Param("rating") int rating,
                                                                    @Param("careTakerId") Long careTakerId);
+    
+    @Query("SELECT cf FROM CareTakerFeedback cf WHERE cf.care_taker.care_taker_id = :careTakerId")
+    public List<CareTakerFeedback> getAllFeedbackByCareTakerId(@Param("careTakerId") Long careTakerId);
+    
+    @Query("SELECT AVG(cf.rating) FROM CareTakerFeedback cf WHERE cf.care_taker.care_taker_id = :careTakerId")
+    public Double getAverageRatingByCareTakerId(@Param("careTakerId") Long careTakerId);
+    
+    @Query("SELECT COUNT(DISTINCT cf.customer.customer_id) FROM CareTakerFeedback cf WHERE cf.care_taker.care_taker_id = :careTakerId")
+    public Integer countDistinctCustomersByCareTakerId(@Param("careTakerId") Long careTakerId);
 }

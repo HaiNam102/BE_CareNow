@@ -1,2 +1,2 @@
     INSERT INTO image (img_profile, img_certificate, img_cccd, care_taker_id) VALUES
-    (null,null,null, 1);
+    ("https://res.cloudinary.com/daowidkvr/image/upload/v1746875361/zl6wqnuni6bmzqotded9.jpg",null,"https://res.cloudinary.com/daowidkvr/image/upload/v1746875361/zl6wqnuni6bmzqotded9.jpg", 1);

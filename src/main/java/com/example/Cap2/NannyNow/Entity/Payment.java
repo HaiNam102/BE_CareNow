@@ -26,7 +26,7 @@ public class Payment {
     Boolean status;
 
     @Column(name = "price")
-    String price;
+    float price;
 
     @Column(name = "transaction_id")
     String transactionId;

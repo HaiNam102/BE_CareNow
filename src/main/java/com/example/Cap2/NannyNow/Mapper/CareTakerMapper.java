@@ -15,8 +15,14 @@ public interface CareTakerMapper {
     @Mapping(source = "nameOfUser" , target = "nameOfCareTaker")
     CareTaker toCareTaker(RegisterDTO registerDTO);
 
+    @Mapping(source = "avarageRating", target = "rating")
+    @Mapping(source = "care_taker_id",target = "careTakerId")
     CareTakerRes toCareTakerRes(CareTaker careTaker);
 
+    @Mapping(source = "avarageRating", target = "rating")
+    @Mapping(source = "care_taker_id",target = "careTakerId")
+    @Mapping(source = "gender",target = "gender")
     CareTakerSearchRes toCareTakerSearchRes(CareTaker careTaker);
+
     CareTaker CareTakerReqtoCareTaker(CareTakerReq careTakerReq);
 }
