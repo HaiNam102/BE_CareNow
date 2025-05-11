@@ -16,6 +16,9 @@ import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.time.LocalDateTime;
+import com.example.Cap2.NannyNow.DTO.Response.Chat.ChatRoomCreatedResponse;
+import com.example.Cap2.NannyNow.DTO.Response.Chat.ChatMessageSimpleResponse;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -49,10 +52,20 @@ public class ChatController {
     @GetMapping("/room/{roomId}/messages")
     public ResponseEntity<?> getRoomMessages(@PathVariable Long roomId) {
         List<ChatMessageResponse> messages = chatService.getRoomMessages(roomId);
+        List<ChatMessageSimpleResponse> simpleMessages = messages.stream()
+            .map(msg -> new ChatMessageSimpleResponse(
+                msg.getContent(),
+                msg.getSenderType(),
+                msg.getSenderName(),
+                msg.getCreatedAt() instanceof LocalDateTime ? 
+                    (LocalDateTime)msg.getCreatedAt() : LocalDateTime.now()
+            ))
+            .toList();
+        
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(messages)
+                .data(simpleMessages)
                 .build()
         );
     }
@@ -64,7 +77,7 @@ public class ChatController {
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-                .data(chatService.getUserChatRooms(userId, userType))
+                .data(chatService.getUserChatRoomsDTO(userId, userType))
                 .build()
         );
     }
@@ -85,10 +98,18 @@ public class ChatController {
     public ResponseEntity<?> createChatRoom(
             @RequestParam("customerId") Long customerId,
             @RequestParam("careTakerId") Long careTakerId) {
+        ChatRoom room = chatService.createChatRoom(customerId, careTakerId);
+        ChatRoomCreatedResponse response = new ChatRoomCreatedResponse(
+            room.getRoomId(), 
+            customerId, 
+            careTakerId,
+            room.getCreatedAt() instanceof LocalDateTime ? 
+                (LocalDateTime)room.getCreatedAt() : LocalDateTime.now()
+        );
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.ADD_SUCCESSFUL.getCode())
                 .message(SuccessCode.ADD_SUCCESSFUL.getMessage())
-                .data(chatService.createChatRoom(customerId, careTakerId))
+                .data(response)
                 .build()
         );
     }
