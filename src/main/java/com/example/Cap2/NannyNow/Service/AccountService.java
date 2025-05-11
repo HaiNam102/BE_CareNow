@@ -68,7 +68,12 @@ public class AccountService {
         }
         Account account = accountMapper.toAccount(registerDTO);
         account.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        account.setActive(true);
+        if (role.getRoleName().equalsIgnoreCase("CARE_TAKER")) {
+            account.setActive(false);
+        }
+        else{
+            account.setActive(true);
+        }
         accountRepository.save(account);
 
         Account_Role account_role = new Account_Role();

@@ -1,9 +1,11 @@
 package com.example.Cap2.NannyNow.DTO.Response.CareTaker;
 
+import com.example.Cap2.NannyNow.DTO.Response.CareTakerFeedBackRes;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +24,5 @@ public class CareTakerRes {
     float rating;
     int numberOfReviews;
     int totalBookings;
+    List<CareTakerFeedBackRes> careTakerFeedBackRes;
 }
