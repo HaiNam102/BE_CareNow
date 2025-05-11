@@ -26,7 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -138,12 +141,12 @@ public class AccountService {
                         if (!data.getName().equalsIgnoreCase(registerDTO.getNameOfUser())) {
                             throw new ApiException(ErrorCode.INVALID_CCCD);
                         }
-                        if (!data.getDob().equalsIgnoreCase(String.valueOf(registerDTO.getDob()))) {
-                            throw new ApiException(ErrorCode.INVALID_CCCD);
-                        }
-                        if (!genderFromCccd.equals(registerDTO.getGender())) {
-                            throw new ApiException(ErrorCode.INVALID_CCCD);
-                        }
+//                        if (!compareDob(data.getDob(), registerDTO.getDob())) {
+//                            throw new ApiException(ErrorCode.INVALID_DOB);
+//                        }
+//                        if (!genderFromCccd.equals(registerDTO.getGender())) {
+//                            throw new ApiException(ErrorCode.INVALID_GENDER);
+//                        }
                     } catch (JsonProcessingException e) {
                         throw new ApiException(ErrorCode.INVALID_CCCD);
                     }
@@ -159,6 +162,24 @@ public class AccountService {
         }
         return registerDTO;
     }
+
+//    public boolean compareDob(String dobString, Date dobObject) {
+//        String[] patterns = {"dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
+//
+//        for (String pattern : patterns) {
+//            try {
+//                SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+//                sdf.setLenient(false);
+//                Date parsedDob = sdf.parse(dobString);
+//                // So sánh ngày sau khi parse
+//                return parsedDob.equals(dobObject);
+//            } catch (ParseException e) {
+//                // ignore và thử pattern tiếp theo
+//            }
+//        }
+//        // Nếu tất cả đều fail
+//        return false;
+//    }
 
     public List<AccountRes> getAllCustomerAccount() {
         List<Account> accounts = accountRepository.findAll();
