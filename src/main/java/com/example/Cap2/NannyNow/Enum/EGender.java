@@ -12,4 +12,13 @@ public enum EGender {
     FEMALE("Female"),
     OTHER("Other");
     String name;
+
+    public static EGender fromVietnamese(String sexInVietnamese) {
+        return switch (sexInVietnamese.toLowerCase()) {
+            case "nam" -> MALE;
+            case "nữ" -> FEMALE;
+            case "khác" -> OTHER;
+            default -> throw new IllegalArgumentException("Unknown gender: " + sexInVietnamese);
+        };
+    }
 }

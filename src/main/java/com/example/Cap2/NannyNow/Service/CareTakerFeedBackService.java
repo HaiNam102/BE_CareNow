@@ -53,4 +53,15 @@ public class CareTakerFeedBackService {
         }
         return careTakerFeedBackRes;
     }
+
+    public List<CareTakerFeedBackRes> getFeedBackOfCareTaker(Long careTakerId){
+        CareTaker careTaker = careTakerRepository.findById(careTakerId).orElseThrow(()->new ApiException((ErrorCode.USER_NOT_FOUND)));
+        List<CareTakerFeedback> careTakerFeedbacks = careTakerFeedBackRepository.getAllFeedbackByCareTakerId(careTaker.getCare_taker_id());
+        List<CareTakerFeedBackRes> careTakerFeedBackRes = new ArrayList<>();
+        for(CareTakerFeedback careTakerFeedback : careTakerFeedbacks){
+            CareTakerFeedBackRes careTakerFeedBackRes1 = careTakerFeedBackMapper.toCareTakerFeedBackRes(careTakerFeedback);
+            careTakerFeedBackRes.add(careTakerFeedBackRes1);
+        }
+        return careTakerFeedBackRes;
+    }
 }

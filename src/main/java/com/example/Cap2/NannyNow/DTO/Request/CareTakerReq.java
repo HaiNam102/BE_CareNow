@@ -17,7 +17,7 @@ public class CareTakerReq {
     String introduceYourself;
     Date dob;
     String gender;
-    String city;
+    String district;
     String workableArea;
     int experienceYear;
     int salary;

@@ -59,6 +59,9 @@ public class SecurityConfig {
                         .requestMatchers("/ws/**").permitAll() 
                         .requestMatchers("/app/**").permitAll()
                         .requestMatchers("/topic/**").permitAll()
+                        .requestMatchers("/api/careRecipient/**").permitAll()
+                        .requestMatchers("/api/calendar/**").permitAll()
+                        .requestMatchers("/api/payment/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 
@@ -77,6 +80,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedOrigin("http://localhost:3001");
         configuration.addAllowedOrigin("http://127.0.0.1:5500"); // Allow your frontend origin
         configuration.addAllowedOrigin("http://localhost:5500");
         configuration.addAllowedMethod("*");
@@ -88,6 +92,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }
 

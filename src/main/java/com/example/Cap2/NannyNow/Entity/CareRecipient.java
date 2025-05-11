@@ -1,5 +1,6 @@
 package com.example.Cap2.NannyNow.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +16,7 @@ public class CareRecipient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "care_recipient_id")
     Long careRecipientId;
 
     @Column(name = "name")
@@ -29,7 +31,8 @@ public class CareRecipient {
     @Column(name = "special_detail", length = 1000)
     String specialDetail;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_id")
+    @JsonIgnore
     Customer customer;
 }
