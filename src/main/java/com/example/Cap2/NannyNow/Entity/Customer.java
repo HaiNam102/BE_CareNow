@@ -55,4 +55,8 @@ public class Customer {
     @JsonIgnore
     List<Booking> bookings;
 
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    List<ChatRoom> chatRooms;
+
 }

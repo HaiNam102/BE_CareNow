@@ -20,7 +20,9 @@ public enum ErrorCode {
             "Please select a time that is at least 1 hour after the care taker has been off.", HttpStatus.CONFLICT),
     OPTION_DETAIL_NOT_FOUND(404055,"Option detail not found",HttpStatus.NOT_FOUND),
     OPTION_NOT_FOUND(404056, "Option not found", HttpStatus.NOT_FOUND),
-    OPTION_DETAIL_OF_CARETAKER_NOT_FOUND(404055, "Option detail of caretaker not found", HttpStatus.NOT_FOUND)
+    OPTION_DETAIL_OF_CARETAKER_NOT_FOUND(404055, "Option detail of caretaker not found", HttpStatus.NOT_FOUND),
+    CHAT_ROOM_NOT_FOUND(40404, "Chat room not found", HttpStatus.NOT_FOUND),
+    INVALID_USER_TYPE(40405, "Invalid user type. Must be either CUSTOMER or CARE_TAKER", HttpStatus.BAD_REQUEST)
     ;
     Integer code;
     String message;

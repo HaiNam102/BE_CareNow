@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CareTaker Chat Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/lib/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .caretaker-theme { background-color: #e6f7ff; border-color: #1890ff; }
+        .chat-header { background-color: #1890ff; color: white; padding: 10px; border-radius: 5px 5px 0 0; }
+        pre { height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 10px; background-color: #f8f8f8; }
+        input[type="text"] { padding: 8px; width: 70%; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 15px; background-color: #1890ff; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background-color: #096dd9; }
+        .controls { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="chat-header">
+        <h2>CareTaker Chat Test</h2>
+    </div>
+    <div class="controls">
+        <button onclick="connectDirectWithDebug()" class="caretaker-theme">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+    </div>
+    <div class="controls">
+        <input type="text" id="message" placeholder="Type a message as CareTaker...">
+        <button onclick="sendMessage()" class="caretaker-theme">Send Message</button>
+    </div>
+    <pre id="output" class="caretaker-theme"></pre>
+
+    <script>
+        let stompClient = null;
+        const output = document.getElementById('output');
+        
+        // Care taker specific settings
+        const CARETAKER_ID = 2;  // Using ID 2 for caretaker
+        const ROOM_ID = 1;       // Same room ID as customer
+        
+        function log(message) {
+            output.textContent += message + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function connectDirectWithDebug() {
+            log('Connecting as CareTaker...');
+            const socket = new WebSocket('ws://localhost:8080/ws');
+            
+            socket.onopen = function() {
+                log('WebSocket connection opened!');
+            };
+            
+            socket.onclose = function(event) {
+                log(`WebSocket closed: code=${event.code}, reason=${event.reason}`);
+            };
+            
+            socket.onerror = function(error) {
+                log('WebSocket error: ' + error);
+            };
+            
+            socket.onmessage = function(event) {
+                log('Raw message received: ' + event.data);
+            };
+            
+            // Set up STOMP over this socket
+            stompClient = Stomp.over(socket);
+            
+            // Enable STOMP debug
+            stompClient.debug = function(str) {
+                log('STOMP: ' + str);
+            };
+            
+            stompClient.connect({}, function(frame) {
+                log('STOMP Connected: ' + frame);
+                
+                // Subscribe to the same room as customer
+                stompClient.subscribe('/topic/room.' + ROOM_ID, function(response) {
+                    log('STOMP message received on subscription');
+                    log('Headers: ' + JSON.stringify(response.headers));
+                    log('Body: ' + response.body);
+                    
+                    try {
+                        const message = JSON.parse(response.body);
+                        log('Parsed message: ' + JSON.stringify(message, null, 2));
+                    } catch (e) {
+                        log('Error parsing message: ' + e);
+                    }
+                });
+            }, function(error) {
+                log('STOMP Connection error: ' + error);
+            });
+        }
+        
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+                log('Disconnected');
+            }
+        }
+        
+        function sendMessage() {
+            const content = document.getElementById('message').value;
+            if(!content) {
+                log('Please enter a message');
+                return;
+            }
+            
+            const chatMessage = {
+                roomId: ROOM_ID,
+                senderId: CARETAKER_ID,
+                senderType: "CARE_TAKER", // This is the key difference for caretaker
+                content: content
+            };
+            
+            log('Sending message as CareTaker: ' + JSON.stringify(chatMessage, null, 2));
+            stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+            log('Message sent to /app/chat.send');
+        }
+    </script>
+</body>
+</html>

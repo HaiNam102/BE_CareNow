@@ -22,6 +22,8 @@ public class FlywayConfig {
                 )
                 .locations(flywayProperties.getLocations().toArray(String[]::new))
                 .baselineOnMigrate(true)
+                .validateOnMigrate(false)
+                .cleanDisabled(false)
                 .load();
     }
 

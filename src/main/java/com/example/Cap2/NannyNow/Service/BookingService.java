@@ -13,6 +13,7 @@ import com.example.Cap2.NannyNow.Repository.CustomerRepository;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,6 +27,8 @@ public class BookingService {
     BookingMapper bookingMapper;
     CareTakerRepository careTakerRepository;
     CustomerRepository customerRepository;
+    @Autowired
+    private ChatService chatService;
 
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime){
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId,day);
@@ -55,6 +58,9 @@ public class BookingService {
         booking.setCustomer(customer);
         booking.setCare_taker(careTaker);
         bookingRepository.save(booking);
+
+        // Automatically create a chat room for this booking
+        chatService.createChatRoom(customerId, careTakerId);
 
         return booking;
     }

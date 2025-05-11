@@ -44,7 +44,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auths/register").permitAll()
                         .requestMatchers("/api/auths/**").permitAll()
@@ -55,8 +55,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/options/**").permitAll()
                         .requestMatchers("/api/options-details/**").permitAll()
                         .requestMatchers("/api/option-details-of-caretaker/**").permitAll()
+                        .requestMatchers("/api/chat/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll() 
+                        .requestMatchers("/app/**").permitAll()
+                        .requestMatchers("/topic/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                
                 .exceptionHandling(exceptions ->
                         exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint) // Xử lý lỗi xác thực
                 )
@@ -71,6 +76,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:8080");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Debug Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/lib/stomp.min.js"></script>
+</head>
+<body>
+    <h2>WebSocket Debug Test</h2>
+    <div>
+        <button onclick="connectDirectWithDebug()">Connect with Debug</button>
+        <button onclick="disconnect()">Disconnect</button>
+    </div>
+    <div>
+        <input type="text" id="message" placeholder="Type a message">
+        <button onclick="sendMessage()">Send Message</button>
+    </div>
+    <pre id="output" style="height:400px; overflow-y:scroll; border:1px solid #ccc; padding:10px; margin-top:10px;"></pre>
+
+    <script>
+        let stompClient = null;
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            output.textContent += message + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function connectDirectWithDebug() {
+            log('Connecting with WebSocket...');
+            const socket = new WebSocket('ws://localhost:8080/ws');
+            
+            socket.onopen = function() {
+                log('WebSocket connection opened!');
+            };
+            
+            socket.onclose = function(event) {
+                log(`WebSocket closed: code=${event.code}, reason=${event.reason}`);
+            };
+            
+            socket.onerror = function(error) {
+                log('WebSocket error: ' + error);
+            };
+            
+            socket.onmessage = function(event) {
+                log('Raw message received: ' + event.data);
+            };
+            
+            // Set up STOMP over this socket
+            stompClient = Stomp.over(socket);
+            
+            // Enable STOMP debug
+            stompClient.debug = function(str) {
+                log('STOMP: ' + str);
+            };
+            
+            stompClient.connect({}, function(frame) {
+                log('STOMP Connected: ' + frame);
+                
+                // Subscribe to room
+                stompClient.subscribe('/topic/room.1', function(response) {
+                    log('STOMP message received on subscription');
+                    log('Headers: ' + JSON.stringify(response.headers));
+                    log('Body: ' + response.body);
+                    
+                    try {
+                        const message = JSON.parse(response.body);
+                        log('Parsed message: ' + JSON.stringify(message, null, 2));
+                    } catch (e) {
+                        log('Error parsing message: ' + e);
+                    }
+                });
+            }, function(error) {
+                log('STOMP Connection error: ' + error);
+            });
+        }
+        
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+                log('Disconnected');
+            }
+        }
+        
+        function sendMessage() {
+            const content = document.getElementById('message').value;
+            if(!content) {
+                log('Please enter a message');
+                return;
+            }
+            
+            const chatMessage = {
+                roomId: 1,
+                senderId: 1,
+                senderType: "CUSTOMER",
+                content: content
+            };
+            
+            log('Sending message: ' + JSON.stringify(chatMessage, null, 2));
+            stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+            log('Message sent to /app/chat.send');
+        }
+    </script>
+</body>
+</html>
