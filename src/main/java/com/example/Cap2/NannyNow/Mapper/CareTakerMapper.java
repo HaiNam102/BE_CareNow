@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = CareTakerFeedBackMapper.class)
 public interface CareTakerMapper {
     CareTakerMapper INSTANCE = Mappers.getMapper(CareTakerMapper.class);
     @Mapping(source = "nameOfUser" , target = "nameOfCareTaker")
@@ -17,6 +17,7 @@ public interface CareTakerMapper {
 
     @Mapping(source = "avarageRating", target = "rating")
     @Mapping(source = "care_taker_id",target = "careTakerId")
+    @Mapping(source = "careTakerFeedbacks",target = "careTakerFeedBackRes")
     CareTakerRes toCareTakerRes(CareTaker careTaker);
 
     @Mapping(source = "avarageRating", target = "rating")
