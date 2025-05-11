@@ -2,6 +2,7 @@ package com.example.Cap2.NannyNow.Service;
 
 import com.example.Cap2.NannyNow.DTO.Request.ChatMessageRequest;
 import com.example.Cap2.NannyNow.DTO.Response.ChatMessageResponse;
+import com.example.Cap2.NannyNow.DTO.Response.Chat.ChatRoomListResponse;
 import com.example.Cap2.NannyNow.Entity.*;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
@@ -82,7 +83,10 @@ public class ChatService {
             
             // Get room info
             result.put("roomId", room.getRoomId());
-            result.put("createdAt", room.getCreatedAt());
+            Object createdAt = room.getCreatedAt();
+            if (createdAt instanceof LocalDateTime dt) {
+                result.put("createdAt", dt);
+            }
             
             // Get last message if exists
             chatMessageRepository.findFirstByChatRoomRoomIdOrderByCreatedAtAsc(room.getRoomId())
@@ -169,6 +173,67 @@ public class ChatService {
         }
         return "System";
         
+    }
+
+    public List<ChatRoomListResponse> getUserChatRoomsDTO(Long userId, String userType) {
+        List<ChatRoom> rooms = getUserChatRooms(userId, userType);
+        
+        return rooms.stream().map(room -> {
+            ChatRoomListResponse.ChatRoomListResponseBuilder builder = ChatRoomListResponse.builder()
+                    .roomId(room.getRoomId());
+            
+            // Set partner info based on user type
+            if ("CUSTOMER".equals(userType)) {
+                // For customer, partner is the caretaker
+                CareTaker partner = room.getCare_taker();
+                builder.partnerId(partner.getCare_taker_id())
+                      .partnerName(partner.getNameOfCareTaker())
+                      .partnerType("CARE_TAKER");
+            } else {
+                // For caretaker, partner is the customer
+                Customer partner = room.getCustomer();
+                builder.partnerId(partner.getCustomer_id())
+                      .partnerName(partner.getNameOfCustomer())
+                      .partnerType("CUSTOMER");
+            }
+            
+            // Handle created date
+            Object createdAt = room.getCreatedAt();
+            if (createdAt instanceof LocalDateTime dt) {
+                builder.createdAt(dt);
+            } else if (createdAt instanceof Object[] arr) {
+                // Handle array format [year, month, day, hour, minute, second]
+                int[] dateArr = new int[arr.length];
+                for (int i = 0; i < arr.length; i++) {
+                    dateArr[i] = (int)arr[i];
+                }
+                builder.createdAt(LocalDateTime.of(
+                    dateArr[0], dateArr[1], dateArr[2], 
+                    dateArr[3], dateArr[4], dateArr[5]
+                ));
+            }
+            
+            // Get last message if exists
+            chatMessageRepository.findFirstByChatRoomRoomIdOrderByCreatedAtAsc(room.getRoomId())
+                .ifPresent(message -> {
+                    builder.lastMessage(message.getContent())
+                           .lastMessageSenderId(message.getSenderId())
+                           .lastMessageSenderType(message.getSenderType().toString());
+                    
+                    // Handle message date
+                    if (message.getCreatedAt() instanceof LocalDateTime) {
+                        builder.lastMessageTime((LocalDateTime)message.getCreatedAt());
+                    }
+                    
+                    // Check if there are unread messages for this user
+                    boolean hasUnread = chatMessageRepository
+                        .countByChatRoomRoomIdAndSenderIdNotAndIsReadFalse(
+                            room.getRoomId(), userId) > 0;
+                    builder.hasUnreadMessages(hasUnread);
+                });
+            
+            return builder.build();
+        }).collect(Collectors.toList());
     }
 
 }

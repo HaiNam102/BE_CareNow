@@ -1,104 +1,177 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>WebSocket Debug Test</title>
+    <title>Customer Chat</title>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stomp-websocket@2.3.4-next/lib/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .chat-container { max-width: 600px; margin: 0 auto; }
+        .chat-header { background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px 5px 0 0; }
+        .chat-messages { height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; }
+        .message { margin-bottom: 10px; padding: 8px; border-radius: 5px; max-width: 80%; }
+        .customer-message { background-color: #DCF8C6; margin-left: auto; text-align: right; }
+        .caretaker-message { background-color: #ECECEC; margin-right: auto; }
+        .message-time { font-size: 0.7em; color: #777; margin-top: 3px; }
+        .input-area { display: flex; margin-top: 10px; }
+        input[type="text"] { flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px; }
+        button:hover { background-color: #45a049; }
+        .status { background-color: #f1f1f1; padding: 5px; margin: 5px 0; border-radius: 3px; font-size: 0.8em; }
+    </style>
 </head>
-<body>
-    <h2>WebSocket Debug Test</h2>
-    <div>
-        <button onclick="connectDirectWithDebug()">Connect with Debug</button>
-        <button onclick="disconnect()">Disconnect</button>
+<body onload="connectToChat()">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Customer Chat</h2>
+        </div>
+        <div id="status" class="status">Connecting...</div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="input-area">
+            <input type="text" id="message" placeholder="Type a message..." onkeypress="if(event.keyCode==13) sendMessage()">
+            <button onclick="sendMessage()">Send</button>
+        </div>
     </div>
-    <div>
-        <input type="text" id="message" placeholder="Type a message">
-        <button onclick="sendMessage()">Send Message</button>
-    </div>
-    <pre id="output" style="height:400px; overflow-y:scroll; border:1px solid #ccc; padding:10px; margin-top:10px;"></pre>
 
     <script>
         let stompClient = null;
-        const output = document.getElementById('output');
+        const chatMessages = document.getElementById('chat-messages');
+        const statusElement = document.getElementById('status');
         
-        function log(message) {
-            output.textContent += message + '\n';
-            output.scrollTop = output.scrollHeight;
-        }
+        // Customer settings
+        const CUSTOMER_ID = 1;
+        const ROOM_ID = 1;
         
-        function connectDirectWithDebug() {
-            log('Connecting with WebSocket...');
+        function connectToChat() {
+            statusElement.textContent = "Connecting...";
             const socket = new WebSocket('ws://localhost:8080/ws');
-            
-            socket.onopen = function() {
-                log('WebSocket connection opened!');
-            };
-            
-            socket.onclose = function(event) {
-                log(`WebSocket closed: code=${event.code}, reason=${event.reason}`);
-            };
-            
-            socket.onerror = function(error) {
-                log('WebSocket error: ' + error);
-            };
-            
-            socket.onmessage = function(event) {
-                log('Raw message received: ' + event.data);
-            };
-            
-            // Set up STOMP over this socket
             stompClient = Stomp.over(socket);
-            
-            // Enable STOMP debug
-            stompClient.debug = function(str) {
-                log('STOMP: ' + str);
-            };
+            stompClient.debug = null; // Disable debug logs
             
             stompClient.connect({}, function(frame) {
-                log('STOMP Connected: ' + frame);
+                statusElement.textContent = "Connected";
+                
+                // Load chat history
+                fetch(`http://localhost:8080/api/chat/room/${ROOM_ID}/messages`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.data && Array.isArray(data.data)) {
+                        chatMessages.innerHTML = ''; // Clear any existing messages
+                        
+                        // Show loading indicator
+                        const loadingDiv = document.createElement('div');
+                        loadingDiv.className = 'status';
+                        loadingDiv.textContent = `Loading ${data.data.length} message(s)...`;
+                        chatMessages.appendChild(loadingDiv);
+                        
+                        // Small delay to show the loading message
+                        setTimeout(() => {
+                            chatMessages.removeChild(loadingDiv);
+                            
+                            if (data.data.length === 0) {
+                                const emptyDiv = document.createElement('div');
+                                emptyDiv.className = 'status';
+                                emptyDiv.textContent = 'No messages yet. Start the conversation!';
+                                chatMessages.appendChild(emptyDiv);
+                            } else {
+                                displayChatHistory(data.data);
+                            }
+                        }, 500);
+                    } else {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'status';
+                        errorDiv.textContent = 'Could not load message history';
+                        chatMessages.appendChild(errorDiv);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching messages:", error);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'status';
+                    errorDiv.textContent = 'Error loading messages: ' + error;
+                    chatMessages.appendChild(errorDiv);
+                });
                 
                 // Subscribe to room
-                stompClient.subscribe('/topic/room.1', function(response) {
-                    log('STOMP message received on subscription');
-                    log('Headers: ' + JSON.stringify(response.headers));
-                    log('Body: ' + response.body);
-                    
-                    try {
-                        const message = JSON.parse(response.body);
-                        log('Parsed message: ' + JSON.stringify(message, null, 2));
-                    } catch (e) {
-                        log('Error parsing message: ' + e);
-                    }
+                stompClient.subscribe('/topic/room.' + ROOM_ID, function(response) {
+                    const message = JSON.parse(response.body);
+                    displayMessage(message);
                 });
             }, function(error) {
-                log('STOMP Connection error: ' + error);
+                statusElement.textContent = "Connection error: " + error;
+                setTimeout(connectToChat, 5000); // Reconnect after 5 seconds
             });
         }
         
-        function disconnect() {
-            if (stompClient !== null) {
-                stompClient.disconnect();
-                log('Disconnected');
+        function displayChatHistory(messages) {
+            messages.forEach(message => {
+                displayMessage(message);
+            });
+            scrollToBottom();
+        }
+        
+        function displayMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            
+            if (message.senderType === "CARE_TAKER") {
+                messageDiv.classList.add('caretaker-message');
+            } else {
+                messageDiv.classList.add('customer-message');
             }
+            
+            const content = document.createElement('div');
+            content.textContent = message.content;
+            
+            const time = document.createElement('div');
+            time.classList.add('message-time');
+            
+            // Handle createdAt format - could be array or string
+            let messageDate;
+            if (Array.isArray(message.createdAt)) {
+                // Format: [year, month, day, hour, minute, second]
+                const [year, month, day, hour, minute, second] = message.createdAt;
+                // Note: JavaScript months are 0-based, so subtract 1 from month
+                messageDate = new Date(year, month-1, day, hour, minute, second);
+            } else {
+                messageDate = new Date(message.createdAt);
+            }
+            
+            time.textContent = `${message.senderName} • ${messageDate.toLocaleTimeString()}`;
+            
+            messageDiv.appendChild(content);
+            messageDiv.appendChild(time);
+            chatMessages.appendChild(messageDiv);
+            
+            scrollToBottom();
+        }
+        
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
         function sendMessage() {
-            const content = document.getElementById('message').value;
+            const messageInput = document.getElementById('message');
+            const content = messageInput.value.trim();
+            
             if(!content) {
-                log('Please enter a message');
                 return;
             }
             
             const chatMessage = {
-                roomId: 1,
-                senderId: 1,
+                roomId: ROOM_ID,
+                senderId: CUSTOMER_ID,
                 senderType: "CUSTOMER",
                 content: content
             };
             
-            log('Sending message: ' + JSON.stringify(chatMessage, null, 2));
             stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
-            log('Message sent to /app/chat.send');
+            messageInput.value = '';
         }
     </script>
 </body>
