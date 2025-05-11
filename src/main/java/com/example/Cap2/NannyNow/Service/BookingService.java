@@ -14,6 +14,7 @@ import com.example.Cap2.NannyNow.Repository.*;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -31,6 +32,8 @@ public class BookingService {
     BookingMapper bookingMapper;
     CareTakerRepository careTakerRepository;
     CustomerRepository customerRepository;
+    @Autowired
+    private ChatService chatService;
     CareTakerService careTakerService;
     CareRecipientRepository careRecipientRepository;
 
@@ -279,7 +282,6 @@ public class BookingService {
         LocalDate now = LocalDate.now();
         int month = now.getMonthValue();
         int year = now.getYear();
-
         Double revenue = bookingRepository.getMonthlyRevenueByNannyId(careTakerId, month, year);
         return revenue != null ? revenue * 0.7 : 0.0;
     }

@@ -22,7 +22,7 @@ public class OptionsDetails {
     @Column(name = "detail_name")
     String detailName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "options_id")
     @JsonIgnore
     Options options;

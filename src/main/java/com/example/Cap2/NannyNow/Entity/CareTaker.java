@@ -85,4 +85,10 @@ public class CareTaker {
     @OneToMany(mappedBy = "care_taker")
     @JsonIgnore
     List<Booking> bookings;
+    
+    @OneToMany(mappedBy = "care_taker")
+    @JsonIgnore
+    List<ChatRoom> chatRooms;
+    
+
 }

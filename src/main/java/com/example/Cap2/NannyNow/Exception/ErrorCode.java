@@ -19,6 +19,10 @@ public enum ErrorCode {
     IMAGE_UPLOAD_FAILED(40901,"Image upload fail",HttpStatus.CONFLICT),
     BOOKING_REQUEST(40902, "Booking cannot be made during this time." +
             "Please select a time that is at least 1 hour after the care taker has been off.", HttpStatus.CONFLICT),
+    OPTION_NOT_FOUND(404056, "Option not found", HttpStatus.NOT_FOUND),
+    OPTION_DETAIL_OF_CARETAKER_NOT_FOUND(404055, "Option detail of caretaker not found", HttpStatus.NOT_FOUND),
+    CHAT_ROOM_NOT_FOUND(40404, "Chat room not found", HttpStatus.NOT_FOUND),
+    INVALID_USER_TYPE(40405, "Invalid user type. Must be either CUSTOMER or CARE_TAKER", HttpStatus.BAD_REQUEST)
     BOOKING_TIME_CONFLICT(40903, "Thời gian này đã có người đặt. Vui lòng chọn thời gian khác.", HttpStatus.CONFLICT),
     BOOKING_TIME_TOO_CLOSE(40904, "Thời gian đặt lịch phải cách các lịch khác ít nhất 1 tiếng", HttpStatus.CONFLICT),
     BOOKING_NOT_FOUND(40905, "Không tìm thấy booking", HttpStatus.NOT_FOUND),

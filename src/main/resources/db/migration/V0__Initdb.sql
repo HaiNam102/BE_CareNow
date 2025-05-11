@@ -135,6 +135,26 @@ create table payment(
     update_at datetime
 );
 
+CREATE TABLE IF NOT EXISTS chat_room (
+    room_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    customer_id BIGINT,
+    care_taker_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    FOREIGN KEY (care_taker_id) REFERENCES care_taker(care_taker_id)
+);
+
+CREATE TABLE IF NOT EXISTS chat_message (
+    message_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    room_id BIGINT,
+    sender_id BIGINT,
+    sender_type VARCHAR(20),
+    content TEXT,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (room_id) REFERENCES chat_room(room_id)
+);
 
 ALTER TABLE customer
 ADD CONSTRAINT fk_customer_account FOREIGN KEY (account_id) REFERENCES account(account_id) ON DELETE CASCADE;
