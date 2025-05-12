@@ -20,4 +20,10 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
         WHERE c.customer_id = :customerId
         """, nativeQuery = true)
     void deleteCustomerAndRelatedData(@Param("customerId") Long customerId);
+
+    @Query("SELECT c.email FROM Customer c WHERE c.customer_id = :customerId")
+    String findEmailById(@Param("customerId") Long customerId);
+
+    @Query("SELECT c.nameOfCustomer FROM Customer c WHERE c.customer_id = :customerId")
+    String findNameById(@Param("customerId") Long customerId);
 }

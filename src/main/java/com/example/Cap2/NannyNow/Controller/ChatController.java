@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import com.example.Cap2.NannyNow.DTO.Response.Chat.ChatRoomCreatedResponse;
 import com.example.Cap2.NannyNow.DTO.Response.Chat.ChatMessageSimpleResponse;
+import com.example.Cap2.NannyNow.Service.EmailService;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -27,6 +28,7 @@ import com.example.Cap2.NannyNow.DTO.Response.Chat.ChatMessageSimpleResponse;
 public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final EmailService emailService;
 
     @MessageMapping("/chat.send")
     public void sendMessage(@Payload ChatMessageRequest chatMessageRequest) {
@@ -42,6 +44,32 @@ public class ChatController {
             
             messagingTemplate.convertAndSend(destination, response);
             System.out.println("Message broadcast complete");
+            
+            // Send email notification to the recipient
+            try {
+                // Get recipient ID and type
+                Long senderId = chatMessageRequest.getSenderId();
+                String senderType = chatMessageRequest.getSenderType();
+                
+                // Determine recipient based on room and sender
+                ChatRoom chatRoom = chatService.getChatRoomById(chatMessageRequest.getRoomId());
+                Long recipientId;
+                String recipientType;
+                
+                if ("CUSTOMER".equals(senderType)) {
+                    recipientId = chatRoom.getCare_taker().getCare_taker_id();
+                    recipientType = "CARE_TAKER";
+                } else {
+                    recipientId = chatRoom.getCustomer().getCustomer_id();
+                    recipientType = "CUSTOMER";
+                }
+                
+                // Send email notification
+                emailService.sendNewMessageNotificationById(recipientId, recipientType, senderId, senderType);
+            } catch (Exception e) {
+                // Log the error but don't fail the message sending
+                System.err.println("Failed to send email notification: " + e.getMessage());
+            }
         } catch (Exception e) {
             System.err.println("==== ERROR in WebSocket message processing ====");
             System.err.println("Error message: " + e.getMessage());

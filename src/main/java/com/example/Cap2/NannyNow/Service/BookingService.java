@@ -285,4 +285,9 @@ public class BookingService {
         Double revenue = bookingRepository.getMonthlyRevenueByNannyId(careTakerId, month, year);
         return revenue != null ? revenue * 0.7 : 0.0;
     }
+
+    public Booking getBookingEntityById(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.BOOKING_NOT_FOUND));
+    }
 }

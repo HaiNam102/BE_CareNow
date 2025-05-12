@@ -39,7 +39,7 @@
         const statusElement = document.getElementById('status');
         
         // CareTaker settings
-        const CARETAKER_ID = 2;
+        const CARETAKER_ID = 1;
         const ROOM_ID = 1;
         
         function connectToChat() {
@@ -62,7 +62,6 @@
                 .then(data => {
                     if (data.data && Array.isArray(data.data)) {
                         chatMessages.innerHTML = ''; // Clear any existing messages
-                        
                         // Show loading indicator
                         const loadingDiv = document.createElement('div');
                         loadingDiv.className = 'status';

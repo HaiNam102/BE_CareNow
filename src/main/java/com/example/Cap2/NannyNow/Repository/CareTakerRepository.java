@@ -30,4 +30,10 @@ public interface CareTakerRepository extends JpaRepository<CareTaker,Long> {
         WHERE c.care_taker_id = :careTakerId
         """, nativeQuery = true)
     void deleteCareTakerAndRelatedData(@Param("careTakerId") Long careTakerId);
+
+    @Query("SELECT c.email FROM CareTaker c WHERE c.care_taker_id = :careTakerId")
+    String findEmailById(@Param("careTakerId") Long careTakerId);
+
+    @Query("SELECT c.nameOfCareTaker FROM CareTaker c WHERE c.care_taker_id = :careTakerId")
+    String findNameById(@Param("careTakerId") Long careTakerId);
 }
