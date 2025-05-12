@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/careRecipient/**").permitAll()
                         .requestMatchers("/api/calendar/**").permitAll()
                         .requestMatchers("/api/payment/**").permitAll()
+                        .requestMatchers("/api/email/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 

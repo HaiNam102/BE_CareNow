@@ -36,6 +36,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService {
+    EmailService emailService;
     AccountRepository accountRepository;
     Account_RoleRepository account_RoleRepository;
     RoleRepository roleRepository;
@@ -118,6 +119,12 @@ public class AccountService {
             }
             optionDetailsOfCareTakerRepository.saveAll(optionDetailsOfCareTakers);
 
+            emailService.sendCaretakerRegistrationNotification(
+                careTaker.getNameOfCareTaker(), 
+                careTaker.getEmail(), 
+                careTaker.getPhoneNumber()
+            );
+            
             Image image = new Image();
             try {
                 String imgProfilUrl = (imgProfile != null) ? cloudinaryService.uploadFile(imgProfile) : null;

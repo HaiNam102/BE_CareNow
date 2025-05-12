@@ -10,13 +10,14 @@ import com.example.Cap2.NannyNow.Enum.EStatus;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Service.BookingService;
 import com.example.Cap2.NannyNow.jwt.JwtUtil;
+import com.example.Cap2.NannyNow.Service.EmailService;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -26,6 +27,7 @@ import java.util.List;
 public class BookingController {
     BookingService bookingService;
     JwtUtil jwtUtil;
+    EmailService emailService;
 
     @PostMapping
     public ResponseEntity<?> createBooking(@RequestBody BookingReq bookingReq,
@@ -35,7 +37,10 @@ public class BookingController {
         Long customer_id = jwtUtil.extractUserId(token);
         Booking booking = bookingService.createBooking(bookingReq, careTakerId, customer_id);
         BookingDTO bookingDTO = bookingService.convertToBookingDTO(booking);
-
+        // Format date in a more readable way
+        // String formattedDate = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        // emailService.sendNewBookingNotificationById(careTakerId, customer_id, formattedDate);
+        // emailService.sendBookingPendingById(customer_id, careTakerId, formattedDate);
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.ADD_SUCCESSFUL.getCode())
                 .message(SuccessCode.ADD_SUCCESSFUL.getMessage())
@@ -95,6 +100,7 @@ public class BookingController {
     public ResponseEntity<String> updateBookingStatus(@PathVariable Long bookingId, @RequestParam String status) {
         try {
             bookingService.updateBookingStatus(bookingId, EStatus.valueOf(status.toUpperCase()));
+            emailService.sendBookingStatusEmail(bookingId, status);
             return ResponseEntity.ok("Booking " + status + " successfully!");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid status");
