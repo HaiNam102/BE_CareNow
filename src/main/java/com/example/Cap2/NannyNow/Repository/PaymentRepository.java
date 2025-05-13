@@ -16,4 +16,7 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
 
     @Query("SELECT p FROM Payment p WHERE p.booking.bookingId = :bookingId ORDER BY p.paymentId DESC")
     Optional<Payment> findByBooking_BookingId(Long bookingId);
+    
+    @Query("SELECT SUM(p.price) FROM Payment p WHERE p.status = true")
+    Float getTotalCompletedPaymentAmount();
 }
