@@ -77,4 +77,18 @@ public class PaymentController {
                 .build()
         );
     }
+
+    @GetMapping("/total")
+    public ResponseEntity<?> getTotalPaymentAmount() {
+        float totalAmount = paymentService.getTotalPaymentAmount();
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalAmount", totalAmount);
+        response.put("totalAmountAfterPayCaretaker", totalAmount * 0.7f);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(response)
+                .build()
+        );
+    }
 }

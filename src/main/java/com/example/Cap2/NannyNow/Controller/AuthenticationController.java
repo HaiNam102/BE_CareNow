@@ -138,6 +138,16 @@ public class AuthenticationController {
         );
     }
 
+    @GetMapping("/careTaker/counts")
+    public ResponseEntity<?> getCareTakerCounts() {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(accountService.getCareTakerCounts())
+                .build()
+        );
+    }
+
     @PutMapping("/active/{accountId}")
     public ResponseEntity<?> updateActive(@PathVariable Long accountId,@RequestParam Boolean status){
         return ResponseEntity.ok(ApiResponse.builder()

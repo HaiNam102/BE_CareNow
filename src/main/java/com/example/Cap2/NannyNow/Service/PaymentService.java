@@ -126,4 +126,9 @@ public class PaymentService {
         }
         return paymentRess;
     }
+
+    public float getTotalPaymentAmount() {
+        Float totalAmount = paymentRepository.getTotalCompletedPaymentAmount();
+        return totalAmount != null ? totalAmount : 0f;
+    }
 }

@@ -30,7 +30,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -245,5 +247,18 @@ public class AccountService {
             accountRepository.save(account);
         }
         return account;
+    }
+
+    public Map<String, Integer> getCareTakerCounts() {
+        int totalCount = accountRepository.countCareTakers();
+        int activeCount = accountRepository.countActiveCareTakers(true);
+        int inactiveCount = accountRepository.countActiveCareTakers(false);
+        
+        Map<String, Integer> counts = new HashMap<>();
+        counts.put("totalCount", totalCount);
+        counts.put("activeCount", activeCount);
+        counts.put("inactiveCount", inactiveCount);
+        
+        return counts;
     }
 }
