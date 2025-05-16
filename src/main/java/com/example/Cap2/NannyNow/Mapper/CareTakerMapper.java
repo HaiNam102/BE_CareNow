@@ -18,6 +18,7 @@ public interface CareTakerMapper {
     @Mapping(source = "avarageRating", target = "rating")
     @Mapping(source = "care_taker_id",target = "careTakerId")
     @Mapping(source = "careTakerFeedbacks",target = "careTakerFeedBackRes")
+    @Mapping(source = "image.imgProfile",target = "image")
     CareTakerRes toCareTakerRes(CareTaker careTaker);
 
     @Mapping(source = "avarageRating", target = "rating")

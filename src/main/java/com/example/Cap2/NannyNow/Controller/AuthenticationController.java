@@ -52,7 +52,7 @@ public class AuthenticationController {
         if (account == null) {
             throw new ApiException(ErrorCode.INVALID_ACCOUNT);
         }
-        if (!account.getActive()) {
+        if ("INACTIVE".equals(account.getActive())) {
             throw new ApiException(ErrorCode.ACCOUNT_INACTIVE);
         }
         List<Account_Role> roles = account.getAccountRoles();
@@ -149,7 +149,7 @@ public class AuthenticationController {
     }
 
     @PutMapping("/active/{accountId}")
-    public ResponseEntity<?> updateActive(@PathVariable Long accountId,@RequestParam Boolean status){
+    public ResponseEntity<?> updateActive(@PathVariable Long accountId,@RequestParam String status){
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())

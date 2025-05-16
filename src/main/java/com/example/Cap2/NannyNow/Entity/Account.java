@@ -1,5 +1,6 @@
 package com.example.Cap2.NannyNow.Entity;
 
+import com.example.Cap2.NannyNow.Enum.EStatusAccount;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,8 +26,9 @@ public class Account {
     @Column(name = "password")
     String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "active")
-    Boolean active;
+    EStatusAccount active;
 
     @OneToOne(mappedBy = "account")
     Customer customer;

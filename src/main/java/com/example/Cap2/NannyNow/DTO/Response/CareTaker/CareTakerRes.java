@@ -17,6 +17,7 @@ public class CareTakerRes {
     String nameOfCareTaker;
     int experienceYear;
     String servicePrice;
+    String image;
     String introduceYourself;
     String workableArea;
     String ward;

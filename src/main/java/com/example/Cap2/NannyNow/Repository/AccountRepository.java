@@ -26,6 +26,6 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
     int countCareTakers();
 
     @Query("SELECT COUNT(a) FROM Account a JOIN a.accountRoles ar JOIN ar.role r WHERE r.roleName = 'CARE_TAKER' AND a.active = :status")
-    int countActiveCareTakers(boolean status);
+    int countActiveCareTakers(@Param("status")String status);
 }
 
