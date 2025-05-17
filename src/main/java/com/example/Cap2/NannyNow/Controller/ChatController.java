@@ -4,8 +4,11 @@ import com.example.Cap2.NannyNow.DTO.Request.ChatMessageRequest;
 import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
 import com.example.Cap2.NannyNow.DTO.Response.ChatMessageResponse;
 import com.example.Cap2.NannyNow.Entity.ChatRoom;
+import com.example.Cap2.NannyNow.Entity.Customer;
+import com.example.Cap2.NannyNow.Entity.CareTaker;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Service.ChatService;
+import com.example.Cap2.NannyNow.Service.AccountService;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -29,6 +32,7 @@ public class ChatController {
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
     private final EmailService emailService;
+    private final AccountService accountService;
 
     @MessageMapping("/chat.send")
     public void sendMessage(@Payload ChatMessageRequest chatMessageRequest) {
@@ -98,6 +102,10 @@ public class ChatController {
         );
     }
 
+    /**
+     * @deprecated Use /rooms/customer/{customerId} or /rooms/caretaker/{caretakerId} instead
+     */
+    @Deprecated
     @GetMapping("/rooms")
     public ResponseEntity<?> getUserChatRooms(
             @RequestParam("userId") Long userId,
@@ -110,15 +118,49 @@ public class ChatController {
         );
     }
 
-    @GetMapping("/partners")
-    public ResponseEntity<?> getChatPartners(
-        @RequestParam("userId") Long userId,
-        @RequestParam("userType") String userType) {
+    @GetMapping("/rooms/customer/{customerId}")
+    public ResponseEntity<?> getCustomerChatRooms(@PathVariable Long customerId) {
         return ResponseEntity.ok(ApiResponse.builder()
-            .code(SuccessCode.GET_SUCCESSFUL.getCode())
-            .message(SuccessCode.GET_SUCCESSFUL.getMessage())
-            .data(chatService.getChatPartnersWithLastMessage(userId, userType))
-            .build()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(chatService.getUserChatRoomsDTO(customerId, "CUSTOMER"))
+                .build()
+        );
+    }
+
+    @GetMapping("/rooms/caretaker/{caretakerId}")
+    public ResponseEntity<?> getCareTakerChatRooms(@PathVariable Long caretakerId) {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(chatService.getUserChatRoomsDTO(caretakerId, "CARE_TAKER"))
+                .build()
+        );
+    }
+
+    /**
+     * Get chat rooms for a customer by username
+     */
+    @GetMapping("/rooms/customer/customerId/{customerId}")
+    public ResponseEntity<?> getCustomerChatRoomsById(@PathVariable Long customerId) {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(chatService.getUserChatRoomsDTO(customerId, "CUSTOMER"))
+                .build()
+        );
+    }
+    
+    /**
+     * Get chat rooms for a care taker by username
+     */
+    @GetMapping("/rooms/caretaker/caretakerId/{caretakerId}")
+    public ResponseEntity<?> getCareTakerChatRoomsById(@PathVariable Long caretakerId) {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(chatService.getUserChatRoomsDTO(caretakerId, "CARE_TAKER"))
+                .build()
         );
     }
 
