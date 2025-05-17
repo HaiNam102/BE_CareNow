@@ -261,4 +261,36 @@ public class AccountService {
         
         return counts;
     }
+
+    /**
+     * Find a customer by username
+     * @param username the username to search for
+     * @return the customer associated with the username
+     * @throws ApiException if the account is not found or is not a customer
+     */
+    public Customer findCustomerByUsername(String username) {
+        Account account = accountRepository.findByUserName(username);
+        if (account == null) {
+            throw new ApiException(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+        
+        return customerRepository.findByAccountId(account.getAccountId())
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+    }
+    
+    /**
+     * Find a care taker by username
+     * @param username the username to search for
+     * @return the care taker associated with the username
+     * @throws ApiException if the account is not found or is not a care taker
+     */
+    public CareTaker findCareTakerByUsername(String username) {
+        Account account = accountRepository.findByUserName(username);
+        if (account == null) {
+            throw new ApiException(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+        
+        return careTakerRepository.findByAccountId(account.getAccountId())
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+    }
 }

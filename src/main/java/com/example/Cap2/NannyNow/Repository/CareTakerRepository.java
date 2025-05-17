@@ -11,6 +11,7 @@ import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface CareTakerRepository extends JpaRepository<CareTaker,Long> {
 
@@ -36,4 +37,7 @@ public interface CareTakerRepository extends JpaRepository<CareTaker,Long> {
 
     @Query("SELECT c.nameOfCareTaker FROM CareTaker c WHERE c.care_taker_id = :careTakerId")
     String findNameById(@Param("careTakerId") Long careTakerId);
+    
+    @Query("SELECT c FROM CareTaker c WHERE c.account.accountId = :accountId")
+    Optional<CareTaker> findByAccountId(@Param("accountId") Long accountId);
 }
