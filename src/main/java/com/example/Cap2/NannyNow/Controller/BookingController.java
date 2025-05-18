@@ -37,6 +37,9 @@ public class BookingController {
         Long customer_id = jwtUtil.extractUserId(token);
         Booking booking = bookingService.createBooking(bookingReq, careTakerId, customer_id);
         BookingDTO bookingDTO = bookingService.convertToBookingDTO(booking);
+        emailService.sendNewBookingNotificationById(careTakerId, customer_id, LocalDateTime.now().toString());
+                // Send notification to customer
+        emailService.sendBookingPendingById(customer_id, careTakerId, LocalDateTime.now().toString());
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.ADD_SUCCESSFUL.getCode())
                 .message(SuccessCode.ADD_SUCCESSFUL.getMessage())
