@@ -30,6 +30,7 @@ public enum ErrorCode {
     CALENDAR_NOT_FOUND(404056, "Calendar not found", HttpStatus.NOT_FOUND),
     INVALID_CCCD(40408,"invalid CCCD",HttpStatus.NOT_FOUND),
     ACCOUNT_INACTIVE(40409,"Your account has been blocked",HttpStatus.CONFLICT),
+    ACCOUNT_PENDING(40409,"Your account has been pending to approve ",HttpStatus.CONFLICT),
     ACCOUNT_NOT_FOUND(40409,"Account not found",HttpStatus.NOT_FOUND),
     INVALID_DOB(40408,"DOB not match ",HttpStatus.NOT_FOUND),
     INVALID_GENDER(40408,"Gender not match ",HttpStatus.NOT_FOUND)

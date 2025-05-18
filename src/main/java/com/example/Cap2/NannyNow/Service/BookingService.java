@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,33 +39,37 @@ public class BookingService {
     private ChatService chatService;
     CareTakerService careTakerService;
     CareRecipientRepository careRecipientRepository;
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime, LocalTime requestedEndTime) {
+    public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime,
+            LocalTime requestedEndTime) {
         List<Booking> bookings = bookingRepository.findBookingForDay(careTakerId, day);
-        
-        // Kiểm tra xem thời gian định đặt có trùng hoặc quá gần với booking nào đã tồn tại không
+
+        // Kiểm tra xem thời gian định đặt có trùng hoặc quá gần với booking nào đã tồn
+        // tại không
         for (Booking booking : bookings) {
             LocalTime existingStartTime = booking.getTimeToStart();
             LocalTime existingEndTime = booking.getTimeToEnd();
-            
+
             // Kiểm tra trường hợp trùng thời gian
-            boolean isTimeOverlap = requestedStartTime.isBefore(existingEndTime) && requestedEndTime.isAfter(existingStartTime);
+            boolean isTimeOverlap = requestedStartTime.isBefore(existingEndTime)
+                    && requestedEndTime.isAfter(existingStartTime);
 
             if (isTimeOverlap) {
                 throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
             }
-            
+
             // Kiểm tra trường hợp không cách 1 tiếng
             boolean isTooClose = requestedStartTime.isBefore(existingEndTime.plusHours(1)) &&
                     requestedEndTime.isAfter(existingStartTime.minusHours(1));
-            
+
             if (isTooClose) {
                 throw new ApiException(ErrorCode.BOOKING_TIME_TOO_CLOSE);
             }
         }
-        
-            return true;
-        }
+
+        return true;
+    }
 
     public boolean isValidBooking(Long careTakerId, LocalDate day, LocalTime requestedStartTime) {
         // Mặc định thời gian kết thúc là 1 giờ sau thời gian bắt đầu
@@ -70,7 +77,8 @@ public class BookingService {
         return isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime);
     }
 
-    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime, LocalTime requestedEndTime) {
+    public boolean areAllDaysValid(Long careTakerId, List<LocalDate> days, LocalTime requestedStartTime,
+            LocalTime requestedEndTime) {
         for (LocalDate day : days) {
             if (!isValidBooking(careTakerId, day, requestedStartTime, requestedEndTime)) {
                 return false;
@@ -88,7 +96,7 @@ public class BookingService {
     public Booking createBooking(BookingReq bookingReq, Long careTakerId, Long customerId) {
         CareTaker careTaker = careTakerRepository.findById(careTakerId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        
+
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
@@ -102,10 +110,10 @@ public class BookingService {
             }
         }
 
-        if (!areAllDaysValid(careTakerId, bookingReq.getDays(), bookingReq.getTimeToStart(), bookingReq.getTimeToEnd())) {
+        if (!areAllDaysValid(careTakerId, bookingReq.getDays(), bookingReq.getTimeToStart(),
+                bookingReq.getTimeToEnd())) {
             throw new ApiException(ErrorCode.BOOKING_TIME_CONFLICT);
         }
-
 
         Booking booking = bookingMapper.toBooking(bookingReq);
         booking.setCustomer(customer);
@@ -129,7 +137,18 @@ public class BookingService {
             booking.getBookingDays().add(bookingDay);
         }
 
-        return bookingRepository.save(booking);
+        Booking savedBooking = bookingRepository.save(booking);
+
+        scheduler.schedule(() -> {
+            Booking checkBooking = bookingRepository.findById(savedBooking.getBookingId())
+                    .orElse(null);
+            if (checkBooking != null && checkBooking.getServiceProgress() == EStatus.PENDING) {
+                checkBooking.setServiceProgress(EStatus.REJECT);
+                bookingRepository.save(checkBooking);
+            }
+        }, 3, TimeUnit.MINUTES);
+
+        return savedBooking;
 
     }
 
@@ -157,7 +176,7 @@ public class BookingService {
             bookingDTO.setCareRecipientId(booking.getCareRecipient().getCareRecipientId());
             bookingDTO.setCareRecipientName(booking.getCareRecipient().getName());
         }
-        
+
         bookingDTO.setCreatedAt(booking.getCreatedAt());
         return bookingDTO;
     }
@@ -190,7 +209,8 @@ public class BookingService {
     }
 
     public Booking updateBookingStatus(Long bookingId, EStatus status) {
-        Booking optionalBooking = bookingRepository.findById(bookingId).orElseThrow(()->new ApiException(ErrorCode.USER_NOT_FOUND));
+        Booking optionalBooking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
         if (optionalBooking != null) {
             optionalBooking.setServiceProgress(status);
             return bookingRepository.save(optionalBooking);
@@ -200,8 +220,9 @@ public class BookingService {
 
     /**
      * Lấy danh sách các time slot đã đặt của một careTaker trong một ngày cụ thể
+     * 
      * @param careTakerId ID của careTaker cần kiểm tra
-     * @param day ngày cần kiểm tra
+     * @param day         ngày cần kiểm tra
      * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
      */
     public List<BookedTimeSlotRes> getBookedTimeSlots(Long careTakerId, LocalDate day) {
@@ -217,46 +238,48 @@ public class BookingService {
                 })
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Lấy danh sách các time slot đã đặt của một careTaker trong một khoảng ngày
+     * 
      * @param careTakerId ID của careTaker cần kiểm tra
-     * @param startDay ngày bắt đầu
-     * @param endDay ngày kết thúc
+     * @param startDay    ngày bắt đầu
+     * @param endDay      ngày kết thúc
      * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
      */
     public List<BookedTimeSlotRes> getBookedTimeSlotsInRange(Long careTakerId, LocalDate startDay, LocalDate endDay) {
         List<BookedTimeSlotRes> result = new ArrayList<>();
         LocalDate currentDay = startDay;
-        
+
         while (!currentDay.isAfter(endDay)) {
             result.addAll(getBookedTimeSlots(careTakerId, currentDay));
             currentDay = currentDay.plusDays(1);
         }
-        
+
         return result;
     }
 
     /**
      * Lấy danh sách các time slot đã đặt của một careTaker trong một danh sách ngày
+     * 
      * @param careTakerId ID của careTaker cần kiểm tra
-     * @param days danh sách ngày cần kiểm tra
+     * @param days        danh sách ngày cần kiểm tra
      * @return danh sách BookedTimeSlotRes chứa thông tin về các time slot đã đặt
      */
     public List<BookedTimeSlotRes> getBookedTimeSlotsForDays(Long careTakerId, List<LocalDate> days) {
         List<BookedTimeSlotRes> result = new ArrayList<>();
-        
+
         for (LocalDate day : days) {
             result.addAll(getBookedTimeSlots(careTakerId, day));
         }
-        
+
         return result;
     }
 
     public CareRecipient getCareRecipientByBookingId(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOOKING_NOT_FOUND));
-        
+
         if (booking.getCareRecipient() == null) {
             throw new ApiException(ErrorCode.CARE_RECIPIENT_NOT_FOUND);
         }

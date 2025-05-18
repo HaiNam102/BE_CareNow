@@ -8,4 +8,7 @@ INSERT INTO payment (booking_id, status, price, transaction_id, create_at, updat
 (7, false, 950000, 'TXN123462', NOW(), NOW()),
 (8, true, 700000, 'TXN123463', NOW(), NOW()),
 (9, false, 1100000, 'TXN123464', NOW(), NOW()),
-(10, true, 550000, 'TXN123465', NOW(), NOW()); 
+(10, true, 550000, 'TXN123465', NOW(), NOW()),
+(11, true, 600000, 'TXN123465', NOW(), NOW()),
+(12, true, 650000, 'TXN123465', NOW(), NOW()),
+(13, true, 700000, 'TXN123465', NOW(), NOW());

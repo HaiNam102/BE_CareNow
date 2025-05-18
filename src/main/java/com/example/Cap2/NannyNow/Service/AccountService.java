@@ -7,6 +7,7 @@ import com.example.Cap2.NannyNow.DTO.Response.CccdResponse;
 import com.example.Cap2.NannyNow.DTO.Response.CccdWrapperResponse;
 import com.example.Cap2.NannyNow.Entity.*;
 import com.example.Cap2.NannyNow.Enum.EGender;
+import com.example.Cap2.NannyNow.Enum.EStatusAccount;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Mapper.AccountMapper;
@@ -72,10 +73,10 @@ public class AccountService {
         Account account = accountMapper.toAccount(registerDTO);
         account.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         if (role.getRoleName().equalsIgnoreCase("CARE_TAKER")) {
-            account.setActive(false);
+            account.setActive(EStatusAccount.valueOf("PENDING"));
         }
         else{
-            account.setActive(true);
+            account.setActive(EStatusAccount.valueOf("ACTIVE"));
         }
         accountRepository.save(account);
 
@@ -211,7 +212,8 @@ public class AccountService {
                             account.getAccountId(),
                             customer.getCustomer_id(),
                             customer.getNameOfCustomer(),
-                            customer.getEmail()
+                            customer.getEmail(),
+                            customer.getAccount().getActive()
                     );
                     results.add(user);
                 }
@@ -236,7 +238,9 @@ public class AccountService {
                             account.getAccountId(),
                             careTaker.getCare_taker_id(),
                             careTaker.getNameOfCareTaker(),
-                            careTaker.getEmail()
+                            careTaker.getEmail(),
+                            careTaker.getImage().getImgProfile(),
+                            careTaker.getAccount().getActive()
                     );
                     results.add(user);
                 }
@@ -245,10 +249,10 @@ public class AccountService {
         return results;
     }
 
-    public Account updateActive(Long accountId,Boolean status){
+    public Account updateActive(Long accountId,String status){
         Account account = accountRepository.findById(accountId).orElseThrow(()->new ApiException(ErrorCode.ACCOUNT_NOT_FOUND));
         if(account != null){
-            account.setActive(status);
+            account.setActive(EStatusAccount.valueOf(status));
             accountRepository.save(account);
         }
         return account;
@@ -256,8 +260,8 @@ public class AccountService {
 
     public Map<String, Integer> getCareTakerCounts() {
         int totalCount = accountRepository.countCareTakers();
-        int activeCount = accountRepository.countActiveCareTakers(true);
-        int inactiveCount = accountRepository.countActiveCareTakers(false);
+        int activeCount = accountRepository.countActiveCareTakers(EStatusAccount.ACTIVE);
+        int inactiveCount = accountRepository.countActiveCareTakers(EStatusAccount.INACTIVE);
         
         Map<String, Integer> counts = new HashMap<>();
         counts.put("totalCount", totalCount);
