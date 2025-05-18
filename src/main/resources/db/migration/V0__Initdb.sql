@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS chat_message (
     message_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     room_id BIGINT,
     sender_id BIGINT,
-    sender_id VARCHAR(20),
+    sender_type VARCHAR(20),
     content TEXT,
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

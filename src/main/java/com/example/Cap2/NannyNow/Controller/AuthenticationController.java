@@ -6,6 +6,7 @@ import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
 import com.example.Cap2.NannyNow.DTO.Response.AuthenticationResponse;
 import com.example.Cap2.NannyNow.Entity.Account;
 import com.example.Cap2.NannyNow.Entity.Account_Role;
+import com.example.Cap2.NannyNow.Enum.EStatusAccount;
 import com.example.Cap2.NannyNow.Exception.ApiException;
 import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
@@ -52,8 +53,12 @@ public class AuthenticationController {
         if (account == null) {
             throw new ApiException(ErrorCode.INVALID_ACCOUNT);
         }
-        if ("INACTIVE".equals(account.getActive())) {
-            throw new ApiException(ErrorCode.ACCOUNT_INACTIVE);
+        String status = account.getActive() == null ? "" : account.getActive().toString().toUpperCase();
+        if (EStatusAccount.INACTIVE.equals(account.getActive())) {
+            throw new ApiException(ErrorCode.ACCOUNT_PENDING);
+        }
+        if (EStatusAccount.PENDING.equals(account.getActive())) {
+            throw new ApiException(ErrorCode.ACCOUNT_PENDING);
         }
         List<Account_Role> roles = account.getAccountRoles();
         if (roles == null || roles.isEmpty()) {

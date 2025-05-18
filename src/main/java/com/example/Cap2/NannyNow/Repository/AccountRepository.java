@@ -1,6 +1,7 @@
 package com.example.Cap2.NannyNow.Repository;
 
 import com.example.Cap2.NannyNow.Entity.Account;
+import com.example.Cap2.NannyNow.Enum.EStatusAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +27,6 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
     int countCareTakers();
 
     @Query("SELECT COUNT(a) FROM Account a JOIN a.accountRoles ar JOIN ar.role r WHERE r.roleName = 'CARE_TAKER' AND a.active = :status")
-    int countActiveCareTakers(@Param("status")String status);
+    int countActiveCareTakers(@Param("status") EStatusAccount status);
 }
 

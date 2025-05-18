@@ -37,10 +37,6 @@ public class BookingController {
         Long customer_id = jwtUtil.extractUserId(token);
         Booking booking = bookingService.createBooking(bookingReq, careTakerId, customer_id);
         BookingDTO bookingDTO = bookingService.convertToBookingDTO(booking);
-        // Format date in a more readable way
-        // String formattedDate = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        // emailService.sendNewBookingNotificationById(careTakerId, customer_id, formattedDate);
-        // emailService.sendBookingPendingById(customer_id, careTakerId, formattedDate);
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.ADD_SUCCESSFUL.getCode())
                 .message(SuccessCode.ADD_SUCCESSFUL.getMessage())
