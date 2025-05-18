@@ -65,7 +65,7 @@ public class ChatService {
     public List<Map<String, Object>> getChatPartnersWithLastMessage(Long userId, String userType) {
         List<ChatRoom> rooms = getUserChatRooms(userId, userType);
         
-        return rooms.stream().map(room -> {
+        List<Map<String, Object>> resultList = rooms.stream().map(room -> {
             Map<String, Object> result = new HashMap<>();
             
             // Get partner info
@@ -89,7 +89,7 @@ public class ChatService {
             }
             
             // Get last message if exists
-            chatMessageRepository.findFirstByChatRoomRoomIdOrderByCreatedAtAsc(room.getRoomId())
+            chatMessageRepository.findFirstByChatRoomRoomIdOrderByCreatedAtDesc(room.getRoomId())
                 .ifPresent(lastMessage -> {
                     result.put("lastMessage", lastMessage.getContent());
                     result.put("lastMessageTime", lastMessage.getCreatedAt());
@@ -99,6 +99,23 @@ public class ChatService {
             
             return result;
         }).toList();
+        
+        // Sort by lastMessageTime in descending order (newest first)
+        // If lastMessageTime is null, use createdAt as fallback
+        resultList.sort((a, b) -> {
+            LocalDateTime timeA = (LocalDateTime) a.getOrDefault("lastMessageTime", a.get("createdAt"));
+            LocalDateTime timeB = (LocalDateTime) b.getOrDefault("lastMessageTime", b.get("createdAt"));
+            
+            // Handle null values (rooms with no messages)
+            if (timeA == null && timeB == null) return 0;
+            if (timeA == null) return 1;
+            if (timeB == null) return -1;
+            
+            // Sort in descending order (newest first)
+            return timeB.compareTo(timeA);
+        });
+        
+        return resultList;
     }
     
     public ChatRoom createChatRoom(Long customerId, Long careTakerId) {
@@ -178,7 +195,7 @@ public class ChatService {
     public List<ChatRoomListResponse> getUserChatRoomsDTO(Long userId, String userType) {
         List<ChatRoom> rooms = getUserChatRooms(userId, userType);
         
-        return rooms.stream().map(room -> {
+        List<ChatRoomListResponse> responseList = rooms.stream().map(room -> {
             ChatRoomListResponse.ChatRoomListResponseBuilder builder = ChatRoomListResponse.builder()
                     .roomId(room.getRoomId());
             
@@ -214,7 +231,7 @@ public class ChatService {
             }
             
             // Get last message if exists
-            chatMessageRepository.findFirstByChatRoomRoomIdOrderByCreatedAtAsc(room.getRoomId())
+            chatMessageRepository.findFirstByChatRoomRoomIdOrderByCreatedAtDesc(room.getRoomId())
                 .ifPresent(message -> {
                     builder.lastMessage(message.getContent())
                            .lastMessageSenderId(message.getSenderId())
@@ -234,6 +251,23 @@ public class ChatService {
             
             return builder.build();
         }).collect(Collectors.toList());
+        
+        // Sort by lastMessageTime in descending order (newest first)
+        // If lastMessageTime is null, use createdAt as fallback
+        responseList.sort((a, b) -> {
+            LocalDateTime timeA = a.getLastMessageTime() != null ? a.getLastMessageTime() : a.getCreatedAt();
+            LocalDateTime timeB = b.getLastMessageTime() != null ? b.getLastMessageTime() : b.getCreatedAt();
+            
+            // Handle null values (rooms with no messages)
+            if (timeA == null && timeB == null) return 0;
+            if (timeA == null) return 1;
+            if (timeB == null) return -1;
+            
+            // Sort in descending order (newest first)
+            return timeB.compareTo(timeA);
+        });
+        
+        return responseList;
     }
 
 }

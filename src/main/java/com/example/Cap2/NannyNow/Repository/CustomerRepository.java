@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface CustomerRepository extends JpaRepository<Customer,Long> {
 //    @Query("SELECT COUNT(c) FROM Customer c WHERE LOWER(username) = LOWER(:username) OR LOWER(email) = LOWER(:email) OR LOWER(phoneNumber) = LOWER(:phoneNumber)")
 //    boolean checkExistCustomer(String username,String email,String phoneNumber);
@@ -26,4 +28,7 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
 
     @Query("SELECT c.nameOfCustomer FROM Customer c WHERE c.customer_id = :customerId")
     String findNameById(@Param("customerId") Long customerId);
+    
+    @Query("SELECT c FROM Customer c WHERE c.account.accountId = :accountId")
+    Optional<Customer> findByAccountId(@Param("accountId") Long accountId);
 }
