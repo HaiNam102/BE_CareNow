@@ -4,6 +4,7 @@ import com.example.Cap2.NannyNow.Config.VNPAYConfig;
 import com.example.Cap2.NannyNow.DTO.Response.CareTakerFeedBackRes;
 import com.example.Cap2.NannyNow.DTO.Response.PaymentDTO;
 import com.example.Cap2.NannyNow.DTO.Response.PaymentRes;
+import com.example.Cap2.NannyNow.DTO.Response.PaymentResAdmin;
 import com.example.Cap2.NannyNow.Entity.Booking;
 import com.example.Cap2.NannyNow.Entity.CareTaker;
 import com.example.Cap2.NannyNow.Entity.Payment;
@@ -130,5 +131,15 @@ public class PaymentService {
     public float getTotalPaymentAmount() {
         Float totalAmount = paymentRepository.getTotalCompletedPaymentAmount();
         return totalAmount != null ? totalAmount : 0f;
+    }
+
+    public List<PaymentResAdmin> getAllPayment(){
+        List<Payment> payments = paymentRepository.getAllPayment();
+        List<PaymentResAdmin> paymentRess = new ArrayList<>();
+        for(Payment payment : payments){
+            PaymentResAdmin paymentRes = paymentMapper.toPaymentResAdmin(payment);
+            paymentRess.add(paymentRes);
+        }
+        return paymentRess;
     }
 }

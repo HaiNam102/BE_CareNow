@@ -19,4 +19,7 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
     
     @Query("SELECT SUM(p.price) FROM Payment p WHERE p.status = true")
     Float getTotalCompletedPaymentAmount();
+
+    @Query("SELECT p FROM Payment p ORDER BY p.paymentId DESC")
+    List<Payment> getAllPayment();
 }
