@@ -91,4 +91,14 @@ public class PaymentController {
                 .build()
         );
     }
+
+    @GetMapping("/getAllPayment")
+    public ResponseEntity<?> getAllPayment() {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.GET_SUCCESSFUL.getCode())
+                .message(SuccessCode.GET_SUCCESSFUL.getMessage())
+                .data(paymentService.getAllPayment())
+                .build()
+        );
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.Cap2.NannyNow.Mapper;
 
 import com.example.Cap2.NannyNow.DTO.Response.PaymentRes;
+import com.example.Cap2.NannyNow.DTO.Response.PaymentResAdmin;
 import com.example.Cap2.NannyNow.Entity.Payment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,4 +14,7 @@ public interface PaymentMapper {
     @Mapping(source = "booking.bookingId",target = "bookingId")
     @Mapping(source = "booking.serviceProgress",target = "bookingStatus")
     PaymentRes toPaymentRes(Payment payment);
+
+    @Mapping(source = "booking.customer.nameOfCustomer",target = "nameOfUser")
+    PaymentResAdmin toPaymentResAdmin(Payment payment);
 }
