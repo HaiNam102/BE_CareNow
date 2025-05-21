@@ -13,21 +13,18 @@ import java.io.File;
 public class IDRecognitionService {
 
     private static final String API_URL = "https://api.fpt.ai/vision/idr/vnm";
-    private static final String API_KEY = "0U46MdN01tRfumdLAHl4Y4YLKC9RXlj2";
+    private static final String API_KEY = "9t5Z3Tv3RD2ovk5Qb4PO3xkXpwwuviPg";
 
     public String recognizeCCCD(File imageFile) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // Tạo body multipart
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("image", new FileSystemResource(imageFile));
 
-        // Headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.set("api-key", API_KEY);
 
-        // Tạo request
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // Gửi request

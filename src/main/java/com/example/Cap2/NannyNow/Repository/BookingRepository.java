@@ -30,7 +30,9 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
     List<Booking> findByCareTakerId(@Param("careTakerId") Long careTakerId);
 
     @Query("SELECT MONTH(b.createdAt), YEAR(b.createdAt), COUNT(b), SUM(b.payment.price) " +
-            "FROM Booking b GROUP BY YEAR(b.createdAt), MONTH(b.createdAt) " +
+            "FROM Booking b " +
+            "WHERE b.payment.status = true "+
+            "GROUP BY YEAR(b.createdAt), MONTH(b.createdAt) " +
             "ORDER BY YEAR(b.createdAt), MONTH(b.createdAt)")
     List<Object[]> getMonthlyStats();
 

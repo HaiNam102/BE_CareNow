@@ -62,20 +62,21 @@ public class AccountService {
     }
 
     @Transactional
-    public RegisterDTO register(RegisterDTO registerDTO, MultipartFile imgProfile, MultipartFile imgCccd) throws IOException {
+    public RegisterDTO register(RegisterDTO registerDTO, MultipartFile imgProfile, MultipartFile imgCccd)
+            throws IOException {
         Role role = roleRepository.findByRoleName(registerDTO.getRoleName());
         if (role == null) {
             throw new ApiException(ErrorCode.INVALID_ROLE);
         }
-        if (accountRepository.existsByUsernameOrEmailOrPhoneNumber(registerDTO.getUserName(), registerDTO.getEmail(), registerDTO.getPhoneNumber())) {
+        if (accountRepository.existsByUsernameOrEmailOrPhoneNumber(registerDTO.getUserName(), registerDTO.getEmail(),
+                registerDTO.getPhoneNumber())) {
             throw new ApiException(ErrorCode.MAIL_PHONE_USERNAME_ALREADY_EXITS);
         }
         Account account = accountMapper.toAccount(registerDTO);
         account.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         if (role.getRoleName().equalsIgnoreCase("CARE_TAKER")) {
             account.setActive(EStatusAccount.valueOf("PENDING"));
-        }
-        else{
+        } else {
             account.setActive(EStatusAccount.valueOf("ACTIVE"));
         }
         accountRepository.save(account);
@@ -108,13 +109,14 @@ public class AccountService {
         if (role.getRoleName().equalsIgnoreCase("CARE_TAKER")) {
             CareTaker careTaker = careTakerMapper.toCareTaker(registerDTO);
             careTaker.setAccount(account);
-            careTakerRepository.save(careTaker);
+            careTaker = careTakerRepository.save(careTaker);
 
             List<Long> selectedOptionDetailIds = registerDTO.getSelectedOptionDetailIds();
             List<OptionDetailsOfCareTaker> optionDetailsOfCareTakers = new ArrayList<>();
 
             for (Long optionDetailId : selectedOptionDetailIds) {
-                OptionsDetails optionsDetails = optionsDetailsRepository.findById(optionDetailId).orElseThrow(() -> new ApiException(ErrorCode.OPTION_DETAIL_NOT_FOUND));
+                OptionsDetails optionsDetails = optionsDetailsRepository.findById(optionDetailId)
+                        .orElseThrow(() -> new ApiException(ErrorCode.OPTION_DETAIL_NOT_FOUND));
                 OptionDetailsOfCareTaker optionDetailsOfCareTaker = new OptionDetailsOfCareTaker();
                 optionDetailsOfCareTaker.setCare_taker(careTaker);
                 optionDetailsOfCareTaker.setOptionsDetails(optionsDetails);
@@ -123,27 +125,23 @@ public class AccountService {
             optionDetailsOfCareTakerRepository.saveAll(optionDetailsOfCareTakers);
 
             emailService.sendCaretakerRegistrationNotification(
-                careTaker.getNameOfCareTaker(), 
-                careTaker.getEmail(), 
-                careTaker.getPhoneNumber()
-            );
-            
+                    careTaker.getNameOfCareTaker(),
+                    careTaker.getEmail(),
+                    careTaker.getPhoneNumber());
+
             Image image = new Image();
             try {
                 String imgProfilUrl = (imgProfile != null) ? cloudinaryService.uploadFile(imgProfile) : null;
                 String imgCccdUrl = null;
                 if (imgCccd != null && !imgCccd.isEmpty()) {
                     imgCccdUrl = cloudinaryService.uploadFile(imgCccd);
-                    // 2. Lưu file tạm để gửi FPT.AI
                     File tempFile = File.createTempFile("cccd-", ".jpg");
-                    imgCccd.transferTo(tempFile); // chuyển MultipartFile -> File
-                    // 3. Gửi đến FPT.AI để kiểm tra CCCD
+                    imgCccd.transferTo(tempFile);
                     String result = idRecognitionService.recognizeCCCD(tempFile);
                     System.out.println(result);
                     if (result == null || result.trim().isEmpty()) {
                         throw new ApiException(ErrorCode.INVALID_CCCD);
                     }
-                    // 4. Xử lý nếu cần validate dữ liệu CCCD
                     ObjectMapper mapper = new ObjectMapper();
                     try {
                         CccdWrapperResponse response = mapper.readValue(result, CccdWrapperResponse.class);
@@ -153,15 +151,16 @@ public class AccountService {
 
                         CccdResponse data = response.getData().get(0);
                         EGender genderFromCccd = EGender.fromVietnamese(data.getSex());
-                        if (!data.getName().equalsIgnoreCase(registerDTO.getNameOfUser())) {
-                            throw new ApiException(ErrorCode.INVALID_CCCD);
+                        careTaker.setNameOfCareTaker(data.getName());
+                        try {
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            Date dob = sdf.parse(data.getDob());
+                            careTaker.setDob(dob);
+                        } catch (ParseException e) {
+                            throw new ApiException(ErrorCode.INVALID_DOB);
                         }
-//                        if (!compareDob(data.getDob(), registerDTO.getDob())) {
-//                            throw new ApiException(ErrorCode.INVALID_DOB);
-//                        }
-//                        if (!genderFromCccd.equals(registerDTO.getGender())) {
-//                            throw new ApiException(ErrorCode.INVALID_GENDER);
-//                        }
+                        careTaker.setGender(genderFromCccd);
+                        careTakerRepository.save(careTaker); // Cập nhật lại careTaker sau khi set thông tin từ CCCD
                     } catch (JsonProcessingException e) {
                         throw new ApiException(ErrorCode.INVALID_CCCD);
                     }
@@ -178,23 +177,23 @@ public class AccountService {
         return registerDTO;
     }
 
-//    public boolean compareDob(String dobString, Date dobObject) {
-//        String[] patterns = {"dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
-//
-//        for (String pattern : patterns) {
-//            try {
-//                SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-//                sdf.setLenient(false);
-//                Date parsedDob = sdf.parse(dobString);
-//                // So sánh ngày sau khi parse
-//                return parsedDob.equals(dobObject);
-//            } catch (ParseException e) {
-//                // ignore và thử pattern tiếp theo
-//            }
-//        }
-//        // Nếu tất cả đều fail
-//        return false;
-//    }
+    // public boolean compareDob(String dobString, Date dobObject) {
+    // String[] patterns = {"dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
+    //
+    // for (String pattern : patterns) {
+    // try {
+    // SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+    // sdf.setLenient(false);
+    // Date parsedDob = sdf.parse(dobString);
+    // // So sánh ngày sau khi parse
+    // return parsedDob.equals(dobObject);
+    // } catch (ParseException e) {
+    // // ignore và thử pattern tiếp theo
+    // }
+    // }
+    // // Nếu tất cả đều fail
+    // return false;
+    // }
 
     public List<AccountRes> getAllCustomerAccount() {
         List<Account> accounts = accountRepository.findAll();
@@ -213,8 +212,7 @@ public class AccountService {
                             customer.getCustomer_id(),
                             customer.getNameOfCustomer(),
                             customer.getEmail(),
-                            customer.getAccount().getActive()
-                    );
+                            customer.getAccount().getActive());
                     results.add(user);
                 }
             }
@@ -240,8 +238,7 @@ public class AccountService {
                             careTaker.getNameOfCareTaker(),
                             careTaker.getEmail(),
                             careTaker.getImage().getImgProfile(),
-                            careTaker.getAccount().getActive()
-                    );
+                            careTaker.getAccount().getActive());
                     results.add(user);
                 }
             }
@@ -249,9 +246,10 @@ public class AccountService {
         return results;
     }
 
-    public Account updateActive(Long accountId,String status){
-        Account account = accountRepository.findById(accountId).orElseThrow(()->new ApiException(ErrorCode.ACCOUNT_NOT_FOUND));
-        if(account != null){
+    public Account updateActive(Long accountId, String status) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ApiException(ErrorCode.ACCOUNT_NOT_FOUND));
+        if (account != null) {
             account.setActive(EStatusAccount.valueOf(status));
             accountRepository.save(account);
         }
@@ -262,12 +260,12 @@ public class AccountService {
         int totalCount = accountRepository.countCareTakers();
         int activeCount = accountRepository.countActiveCareTakers(EStatusAccount.ACTIVE);
         int inactiveCount = accountRepository.countActiveCareTakers(EStatusAccount.INACTIVE);
-        
+
         Map<String, Integer> counts = new HashMap<>();
         counts.put("totalCount", totalCount);
         counts.put("activeCount", activeCount);
         counts.put("inactiveCount", inactiveCount);
-        
+
         return counts;
     }
 }
