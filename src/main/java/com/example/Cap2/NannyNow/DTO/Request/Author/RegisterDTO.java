@@ -34,4 +34,5 @@ public class RegisterDTO implements Serializable {
     List<Long> selectedOptionDetailIds;
     CareRecipientReq careRecipient;
     List<CareRecipientReq> careRecipients;
+
 }
