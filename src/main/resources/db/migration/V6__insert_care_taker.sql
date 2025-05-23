@@ -19,4 +19,5 @@ INSERT INTO care_taker (name_of_care_taker, email, phone_number, introduce_yours
 ('Vu Thi Lan', 'caretaker18@example.com', '0978111239', 'Caring for infants and small kids', '1988-08-22', 'FEMALE', 'Khue Trung', 'Cam Le', 'Lien Chieu', 7, '85000', true, 22),
 ('Ngo Van Duong', 'caretaker19@example.com', '0978111240', 'Assisting bedridden patients', '1981-04-25', 'MALE', 'An Hai Bac', 'Son Tra', 'Hai Chau', 11, '95000', true, 23),
 ('Tran Thi Kieu', 'caretaker20@example.com', '0978111241', 'Calm and well-trained', '1996-06-03', 'FEMALE', 'Chinh Gian', 'Thanh Khe', 'Ngu Hanh Son', 2, '68000', true, 24),
-('Bui Van Tuan', 'caretaker21@example.com', '0978111242', 'Former caregiver in elderly home', '1984-10-16', 'MALE', 'Thanh Khe Dong', 'Thanh Khe', 'Cam Le', 10, '91000', true, 25);
+('Bui Van Tuan', 'caretaker21@example.com', '0978111242', 'Former caregiver in elderly home', '1984-10-16', 'MALE', 'Thanh Khe Dong', 'Thanh Khe', 'Cam Le', 10, '91000', true, 25),
+('Dang Thi Kim Chi', 'KimChi@example.com', '0978111242', 'Former caregiver in elderly home', '1984-10-16', 'FEMALE', 'Thanh Khe Dong', 'Thanh Khe', 'Cam Le', 10, '91000', true, 26);
