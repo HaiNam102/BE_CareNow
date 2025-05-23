@@ -23,4 +23,5 @@ INSERT INTO account (user_name, password) VALUES
 ('caretaker18', '$2a$12$/OVg2Fdq4h5iYRdvDnG98OVIgkbxvyd3oej.Z3lfw2fvrTWNK2c1.'),
 ('caretaker19', '$2a$12$/OVg2Fdq4h5iYRdvDnG98OVIgkbxvyd3oej.Z3lfw2fvrTWNK2c1.'),
 ('caretaker20', '$2a$12$/OVg2Fdq4h5iYRdvDnG98OVIgkbxvyd3oej.Z3lfw2fvrTWNK2c1.'),
-('caretaker21', '$2a$12$/OVg2Fdq4h5iYRdvDnG98OVIgkbxvyd3oej.Z3lfw2fvrTWNK2c1.');
+('caretaker21', '$2a$12$/OVg2Fdq4h5iYRdvDnG98OVIgkbxvyd3oej.Z3lfw2fvrTWNK2c1.'),
+('kimChi', '$2a$12$/OVg2Fdq4h5iYRdvDnG98OVIgkbxvyd3oej.Z3lfw2fvrTWNK2c1.');

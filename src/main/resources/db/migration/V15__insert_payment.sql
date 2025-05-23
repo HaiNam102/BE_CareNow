@@ -1,5 +1,5 @@
 INSERT INTO payment (booking_id, status, price, transaction_id, create_at, update_at) VALUES
-(1, false, 500, 'TXN123456', NOW(), NOW()),
+(1, false, 500000, 'TXN123456', NOW(), NOW()),
 (2, true, 750000, 'TXN123457', NOW(), NOW()),
 (3, true, 500000, 'TXN123458', NOW(), NOW()),
 (4, true, 1200000, 'TXN123459', NOW(), NOW()),
