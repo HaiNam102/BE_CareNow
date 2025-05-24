@@ -160,4 +160,13 @@ public class CareTakerService {
         }
         careTakerRepository.deleteCareTakerAndRelatedData(id);
     }
+
+    public CareTakerRes updateServicePrice(Long careTakerId,String newPrice) {
+        CareTaker careTaker = careTakerRepository.findById(careTakerId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        
+        careTaker.setServicePrice(newPrice);
+        CareTaker updatedCareTaker = careTakerRepository.save(careTaker);
+        return careTakerMapper.toCareTakerRes(updatedCareTaker);
+    }
 }

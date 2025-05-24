@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.Cap2.NannyNow.Service.EmailService;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
 public class AuthenticationController {
     AccountService accountService;
     JwtUtil jwtUtil;
+    EmailService emailService;
 
     public Account authenticate(String userName, String password) {
         try {
@@ -155,6 +157,9 @@ public class AuthenticationController {
 
     @PutMapping("/active/{accountId}")
     public ResponseEntity<?> updateActive(@PathVariable Long accountId,@RequestParam String status){
+        if(status.equals("ACTIVE")){
+            emailService.sendCaretakerApprovalNotificationById(accountId);
+        }
         return ResponseEntity.ok(ApiResponse.builder()
                 .code(SuccessCode.GET_SUCCESSFUL.getCode())
                 .message(SuccessCode.GET_SUCCESSFUL.getMessage())
