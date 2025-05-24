@@ -40,4 +40,7 @@ public interface CareTakerRepository extends JpaRepository<CareTaker,Long> {
     
     @Query("SELECT c FROM CareTaker c WHERE c.account.accountId = :accountId")
     Optional<CareTaker> findByAccountId(@Param("accountId") Long accountId);
+
+    @Query("SELECT c.care_taker_id FROM CareTaker c WHERE c.account.accountId = :accountId")
+    Long findCaretakerIdByAccountId(@Param("accountId") Long accountId);
 }

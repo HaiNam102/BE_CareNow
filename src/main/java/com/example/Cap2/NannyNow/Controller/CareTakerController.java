@@ -5,6 +5,8 @@ import com.example.Cap2.NannyNow.DTO.Response.ApiResponse;
 import com.example.Cap2.NannyNow.Exception.SuccessCode;
 import com.example.Cap2.NannyNow.Service.CareTakerService;
 import com.example.Cap2.NannyNow.jwt.JwtUtil;
+import com.example.Cap2.NannyNow.Exception.ApiException;
+import com.example.Cap2.NannyNow.Exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -124,5 +126,23 @@ public class CareTakerController {
                 .message(SuccessCode.DELETE_SUCCESSFUL.getMessage())
                 .build()
         );
+    }
+
+    @PutMapping("/price/{careTakerId}")
+    public ResponseEntity<?> updateServicePrice(
+            @PathVariable Long careTakerId,
+            @RequestBody Map<String, String> priceRequest) {
+
+        String newPrice = priceRequest.get("price");
+
+        if (newPrice == null || Double.parseDouble(newPrice) < 0) {
+            throw new ApiException(ErrorCode.INVALID_INPUT);
+        }
+
+        return ResponseEntity.ok(ApiResponse.builder()
+                .code(SuccessCode.UPDATE_SUCCESSFUL.getCode())
+                .message(SuccessCode.UPDATE_SUCCESSFUL.getMessage())
+                .data(careTakerService.updateServicePrice(careTakerId, newPrice))
+                .build());
     }
 }

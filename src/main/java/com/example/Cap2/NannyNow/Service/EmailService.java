@@ -101,6 +101,32 @@ public class EmailService {
                "The CareNow Team";
     }
     
+    private String getCaretakerApprovalTemplate(String caretakerName) {
+        return "Dear " + caretakerName + ",\n\n" +
+               "We are pleased to inform you that your CareNow care taker registration has been approved!\n\n" +
+               "You can now log in to your account and start receiving booking requests from customers.\n\n" +
+               "Here's what you can do next:\n" +
+               "1. Complete your profile details\n" +
+               "2. Set up your availability calendar\n" +
+               "3. Wait for booking requests from customers\n\n" +
+               "If you need any assistance, please contact our support team.\n\n" +
+               "Welcome to the CareNow community!\n\n" +
+               "Best regards,\n" +
+               "The CareNow Team";
+    }
+    
+    public void sendCaretakerApprovalNotificationById(Long accountId) {
+        Long caretakerId = careTakerRepository.findCaretakerIdByAccountId(accountId);
+        sendCaretakerApprovalNotificationForm(caretakerId);
+    }
+
+    public void sendCaretakerApprovalNotificationForm(Long careTakerId) {
+        String caretakerEmail = careTakerRepository.findEmailById(careTakerId);
+        String caretakerName = careTakerRepository.findNameById(careTakerId);
+        String text = getCaretakerApprovalTemplate(caretakerName);
+        sendEmail(caretakerEmail, "CareNow: Caretaker Approval", text);
+    }
+
     // Helper methods for sending specific email types
     private void sendBookingConfirmation(String to, String customerName, String caretakerName, String bookingDate) {
         String subject = "CareNow: Booking Confirmation";
