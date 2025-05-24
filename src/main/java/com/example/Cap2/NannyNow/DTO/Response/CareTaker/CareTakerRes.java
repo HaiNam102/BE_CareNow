@@ -22,6 +22,8 @@ public class CareTakerRes {
     String workableArea;
     String ward;
     String district;
+    String email;
+    String phoneNumber;
     float rating;
     int numberOfReviews;
     int totalBookings;
