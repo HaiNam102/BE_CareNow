@@ -57,6 +57,22 @@ public class CareTakerService {
         return careTakerRes;
     }
 
+    public CareTakerSearchRes getCareTakerSearchById(Long id){
+        CareTaker careTaker = careTakerRepository.findById(id)
+                .orElseThrow(()->new ApiException(ErrorCode.USER_NOT_FOUND));
+        updateAverageRating(careTaker);
+        CareTakerSearchRes careTakerSearchRes = careTakerMapper.toCareTakerSearchRes(careTaker);
+        if (careTaker.getImage() != null) {
+            careTakerSearchRes.setImgProfile(careTaker.getImage().getImgProfile());
+        } else {
+            careTakerSearchRes.setImgProfile(null);
+        }
+        careTakerSearchRes.setTotalReviewers(getTotalReviewers(careTaker.getCare_taker_id()));
+        careTakerSearchRes.setTotalBookings(getCareTakerBookingsCount(careTaker.getCare_taker_id()));
+        careTakerSearchRes.setOptionDetailsOfCareTakers(getOptionDetailsOfCareTakers(careTaker.getCare_taker_id()));
+        return careTakerSearchRes;
+    }
+
     public List<CareTakerSearchRes> getCareTakerByDayAndArea(String area, LocalDate dayStart, LocalDate dayEnd){
         List<CareTaker> careTakers = careTakerRepository.getCareTakerByDayAndArea(area, dayStart, dayEnd);
         List<CareTakerSearchRes> careTakerSearchResList = new ArrayList<>();
