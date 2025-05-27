@@ -1,2 +1,22 @@
 INSERT INTO care_taker_feedback (feedback, rating, customer_id, care_taker_id) VALUES
-('Great care service!', 5, 3, 2);
+('Great care service!', 5, 3, 2),
+('Very attentive and kind.', 5, 2, 1),
+('Service was average, room for improvement.', 3, 1, 3),
+('Did not meet expectations.', 2, 1, 3),
+('Excellent care and communication.', 5, 2, 4),
+('Satisfactory but not exceptional.', 3, 3, 5),
+('Friendly and professional caretaker.', 1, 3, 6),
+('Late arrival but good service.', 3, 2, 7),
+('Highly recommend this caretaker!', 5, 3, 8),
+('Unreliable and not punctual.', 1, 3, 9),
+('Great with elderly patients.', 5, 2, 10),
+('Great care service!', 5, 3, 11),
+('Very kind and helpful.', 4, 1, 12),
+('Always arrives on time.', 5, 2, 1),
+('Average experience.', 3, 3, 2),
+('Not satisfied with the service.', 2, 1, 3),
+('Excellent communication skills.', 5, 2, 4),
+('Friendly and respectful.', 4, 3, 17),
+('Was late a few times.', 2, 1, 11),
+('Good with elderly people.', 5, 2, 2),
+('Highly recommend!', 5, 3, 3);

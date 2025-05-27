@@ -259,7 +259,7 @@ public class AccountService {
     public Map<String, Integer> getCareTakerCounts() {
         int totalCount = accountRepository.countCareTakers();
         int activeCount = accountRepository.countActiveCareTakers(EStatusAccount.ACTIVE);
-        int inactiveCount = accountRepository.countActiveCareTakers(EStatusAccount.INACTIVE);
+        int inactiveCount = accountRepository.countActiveCareTakers(EStatusAccount.PENDING);
 
         Map<String, Integer> counts = new HashMap<>();
         counts.put("totalCount", totalCount);
