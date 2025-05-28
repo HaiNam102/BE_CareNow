@@ -146,7 +146,7 @@ public class BookingService {
                 checkBooking.setServiceProgress(EStatus.REJECT);
                 bookingRepository.save(checkBooking);
             }
-        }, 3, TimeUnit.MINUTES);
+        }, 10, TimeUnit.MINUTES);
 
         return savedBooking;
 
