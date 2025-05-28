@@ -15,6 +15,7 @@ public class AccountRes {
     String nameOfUser;
     String email;
     String image;
+    String price;
     EStatusAccount status;
 
     public AccountRes(Long accountId, Long userId, String nameOfUser, String email, EStatusAccount status) {

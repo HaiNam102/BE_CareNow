@@ -151,6 +151,10 @@ public class AccountService {
 
                         CccdResponse data = response.getData().get(0);
                         EGender genderFromCccd = EGender.fromVietnamese(data.getSex());
+                        if (accountRepository.existsByUsernameOrEmailOrPhoneNumber(data.getName(), registerDTO.getEmail(),
+                                registerDTO.getPhoneNumber())) {
+                            throw new ApiException(ErrorCode.MAIL_PHONE_USERNAME_ALREADY_EXITS);
+                        }
                         careTaker.setNameOfCareTaker(data.getName());
                         try {
                             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -238,6 +242,7 @@ public class AccountService {
                             careTaker.getNameOfCareTaker(),
                             careTaker.getEmail(),
                             careTaker.getImage().getImgProfile(),
+                            careTaker.getServicePrice(),
                             careTaker.getAccount().getActive());
                     results.add(user);
                 }
